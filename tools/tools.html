@@ -5,6 +5,12 @@
 GleammerRay - Tools
 </title>
 <link rel="icon" href="../images/gleam.jpg" type="image/icon type">
+<!-- Embed -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="GleammerRay">
+<meta property="og:title" content="GleammerRay - Tools">
+<meta property="og:description" content="Good shit right here">
+<meta property="og:image" content="https://github.com/GleammerRay/gleammerray.github.io/blob/main/images/gleam.jpg?raw=true">
 </head>
 <link rel="stylesheet" href="../gleam.css">
 <style>
@@ -12,6 +18,35 @@ GleammerRay - Tools
     overflow-x: hidden;
     background-color: yellow;
     font-family: 'Press Start 2P', cursive;
+  }
+  
+  .compretty {
+    display: flex;
+    align-items: center;
+    top: 62;
+    right: 4vw;
+    height: 11vw;
+    width: 30vw;
+    position: absolute;
+  }
+  
+  .compretty > * {
+    vertical-align: middle;
+  }
+  
+  .eye {
+    --eye-diameter: 11vw;
+  }
+  
+  .eye1 {
+    display: inline-block;
+    position: relative;
+  }
+  
+  .eye2 {
+    display: inline-block;
+    position: relative;
+    margin-left: 3vw;
   }
   
   #page-title p {
@@ -142,6 +177,14 @@ GleammerRay - Tools
       <p><<<<<<<<<</p>
     </div>
   </div></a>
+  <div class="compretty">
+    <div class="eye eye1">
+      <div class="pupil"></div>
+    </div>
+    <div class="eye eye2">
+      <div class="pupil"></div>
+    </div>
+  </div>
   <div class="section" id="passy">
     <h1>Passy</h1>
     <p>Passy is an offline password manager with cross-platfrom synchronization. 🔒</p>
@@ -163,7 +206,7 @@ GleammerRay - Tools
     </center>
   </div>
   <div class="section" id="compretty">
-    <h1>Compretty</h1>
+    <h1>CompRetty</h1>
     <p>A competition management Discord bot.</p>
     <center>
       <div class="link-button" id="compretty-github">

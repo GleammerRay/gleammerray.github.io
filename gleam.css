@@ -172,13 +172,11 @@ body {
 
 .eye {
   vertical-align: middle;
-  position: absolute;
-  left: 65;
-  top: 50;
-  margin-left:-50;
+  position: relative;
   display: inline-block;
-  width: 90;
-  height: 90;
+  --eye-diameter: 90;
+  width: var(--eye-diameter, 90);
+  height: var(--eye-diameter, 90);
   -webkit-border-radius: 1000px;
   -moz-border-radius: 1000px;
   border-radius: 1000px;
@@ -187,18 +185,18 @@ body {
 }
 
 .eye1 {
-  left: 65;
+  margin-left: 15;
 }
 
 .eye2 {
-  left: 180;
+  margin-left: 25;
 }
   
 .pupil {
   position: relative;
-  width: 75;
-  height: 75;
-  top: 9;
+  width: 80%;
+  height: 80%;
+  top: 11%;
   -webkit-border-radius: 1000px;
   -moz-border-radius: 1000px;
   border-radius: 1000px;
@@ -208,30 +206,30 @@ body {
   
 @keyframes eye-blink {
   0% {
-    height: 90;
+    height: var(--eye-diameter, 90);
     margin-top: 0;
   }
   25% {
     height: 0;
-    margin-top: 45;
+    margin-top: calc(--eye-diameter / 2);
   }
   50% {
-    height: 90;
+    height: var(--eye-diameter, 90);
     margin-top: 0;
   }
 }
   
 @keyframes pupil-blink {
   0% {
-    height: 75;
-    top: 9;
+    height: 80%;
+    top: 11%;
   }
   25% {
     height: 0;
-    top: 0;
+    top: 50%;
   }
   50% {
-    height: 75;
-    top: 9;
+    height: 80%;
+    top: 11%;
   }
 }
