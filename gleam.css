@@ -172,7 +172,7 @@ body {
 
 .eye {
   vertical-align: middle;
-  position: relative;
+  position: absolute;
   left: 65;
   top: 50;
   margin-left:-50;
@@ -184,6 +184,14 @@ body {
   border-radius: 1000px;
   background: white;
   animation: eye-blink 2s linear infinite;
+}
+
+.eye1 {
+  left: 65;
+}
+
+.eye2 {
+  left: 180;
 }
   
 .pupil {
@@ -201,12 +209,15 @@ body {
 @keyframes eye-blink {
   0% {
     height: 90;
+    margin-top: 0;
   }
   25% {
     height: 0;
+    margin-top: 45;
   }
   50% {
     height: 90;
+    margin-top: 0;
   }
 }
   

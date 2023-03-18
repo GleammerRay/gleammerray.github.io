@@ -128,46 +128,73 @@ GleammerRay
   
   .section-text-right {
     position: relative;
-    top: -10;
-    display: inline-block;
-    margin-left: 140;
+    margin-left: 20%;
   }
   
   .section-text-left {
     position: relative;
     display: inline-block;
-    top: -10;
-    margin-right: 275;
+    margin-left: 5%;
   }
   
   #tools {
-    font-size: 75;
+    display: flex;
+    align-items: center;
+    font-size: 8vw;
     height: 200;
     top: 70;
     position: relative;
   }
   
   #tools center {
+    display: flex;
+    align-items: center;
     position: absolute;
     z-index: 100;
+    width: calc(100% - 250px);
   }
   
   #pretty {
-    font-size: 75;
+    display: flex;
+    align-items: center;
+    font-size: 8vw;
     height: 200;
     top: 100;
+    width: 100%;
+  }
+  
+  #pretty center {
+    display: inline-block;
+    align-items: center;
+    position: absolute;
+    z-index: 100;
+    right: 0;
+    width: calc(100% - 200px);
+  }
+  
+  #pretty center p {
+    right: 0;
   }
   
   #sounds {
+    display: flex;
+    align-items: center;
     image-rendering: pixelated;
-    font-size: 75;
+    font-size: 8vw;
     height: 200;
     top: 130;
   }
   
   #sounds center {
+    display: flex;
+    align-items: center;
     position: absolute;
     z-index: 100;
+    width: calc(100% - 250px);
+  }
+  
+  #sounds center p {
+    padding-left: 8;
   }
   
   #toggle-grayscale2 {
@@ -202,12 +229,18 @@ GleammerRay
   }
   
   .compretty {
+    display: flex;
+    align-items: center;
     height: 100%;
     width: 250;
     background-color: yellow;
     position: absolute;
     bottom: 0;
     right: 0;
+  }
+  
+  .compretty > * {
+    vertical-align: middle;
   }
 </style>
 <body>
@@ -357,10 +390,10 @@ GleammerRay
   <a href="tools/tools.html"><div class="section" id="tools">
     <center><p class="section-text-left"><span>TOOLS</span></p></center>
     <div class="compretty">
-      <div class="eye">
+      <div class="eye eye1">
         <div class="pupil"></div>
       </div>
-      <div class="eye">
+      <div class="eye eye2">
         <div class="pupil"></div>
       </div>
     </div>
