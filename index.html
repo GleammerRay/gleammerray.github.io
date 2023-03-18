@@ -120,14 +120,18 @@ GleammerRay
   }
   
   .section-text-right {
+    display: inline-block;
     position: relative;
     margin-left: 20%;
+    top: 0;
+    color: yellow;
   }
   
   .section-text-left {
     position: relative;
     display: inline-block;
     margin-left: 5%;
+    color: yellow;
   }
   
   #tools {
@@ -135,7 +139,7 @@ GleammerRay
     align-items: center;
     font-size: 8vw;
     height: 200;
-    top: 70;
+    margin-top: 70;
     position: relative;
   }
   
@@ -145,6 +149,7 @@ GleammerRay
     position: absolute;
     z-index: 100;
     width: calc(100% - 250px);
+    height: 100%;
   }
   
   #pretty {
@@ -152,17 +157,18 @@ GleammerRay
     align-items: center;
     font-size: 8vw;
     height: 200;
-    top: 100;
+    margin-top: 50;
     width: 100%;
   }
   
   #pretty center {
-    display: inline-block;
+    display: flex;
     align-items: center;
     position: absolute;
     z-index: 100;
     right: 0;
     width: calc(100% - 200px);
+    height: 100%;
   }
   
   #pretty center p {
@@ -175,7 +181,7 @@ GleammerRay
     image-rendering: pixelated;
     font-size: 8vw;
     height: 200;
-    top: 130;
+    margin-top: 50;
   }
   
   #sounds center {
@@ -184,16 +190,29 @@ GleammerRay
     position: absolute;
     z-index: 100;
     width: calc(100% - 250px);
+    height: 100%;
   }
   
   #sounds center p {
     padding-left: 8;
   }
   
+  @media screen and (min-width: 1600px) {
+    #tools {
+      font-size: 130;
+    }
+    #pretty {
+      font-size: 130;
+    }
+    #sounds {
+      font-size: 130;
+    }
+  }
+  
   #toggle-grayscale2 {
     position: relative;
     left: 0%;
-    top: 160;
+    margin-top: 50;
     width: 100%;
     color: white;
     font-size: 3vw;
@@ -214,7 +233,7 @@ GleammerRay
     height: 90;
     font-size: 15;
     text-align: center;
-    top: 190;
+    margin-top: 50;
   }
   
   #contacts p {
@@ -380,7 +399,7 @@ GleammerRay
     <p class="marquee marquee1"><span>GLEAMMER • PROGARFIELDFAN98102 • ACAB • BLUE LIVES MATTER • DR. SUIUS • SHIT/SHITSELF • SCANNER-MAN • ALL YOUR BASE ARE BELONG TO US •&nbsp;</span></p>
     <p class="marquee marquee2"><span>GLEAMMER • PROGARFIELDFAN98102 • ACAB • BLUE LIVES MATTER • DR. SUIUS • SHIT/SHITSELF • SCANNER-MAN • ALL YOUR BASE ARE BELONG TO US •&nbsp;</span></p>
   </div>
-  <a href="./tools"><div class="section" id="tools">
+  <div class="section" id="tools"><a class="overlay" href="./tools">
     <center><p class="section-text-left"><span>TOOLS</span></p></center>
     <div class="compretty">
       <div class="eye eye1">
@@ -390,19 +409,19 @@ GleammerRay
         <div class="pupil"></div>
       </div>
     </div>
-  </div></a>
-    <a href="./pretty"><div class="section" id="pretty">
+  </a></div>
+  <div class="section" id="pretty"><a class="overlay" href="./pretty">
     <div class="section-image-left image">
       <img src="images/gleamhighres.png" height="200">
     </div>
     <center><p class="section-text-right"><span>PRETTY</span></p></center>
-  </div></a>
-  <a href="./sounds"><div class="section" id="sounds">
+  </a></div>
+  <div class="section" id="sounds"><a class="overlay" href="./sounds">
     <center><p class="section-text-left"><span>SOUNDS</span></p></center>
     <div class="section-image-right image">
       <img src="images/Bloody Peeking Hood.png" height="200">
     </div>
-  </div></a>
+  </a></div>
   <div id="toggle-grayscale2">
     <div onclick="toggleGrayscale()">
       <p><span>TOGGLE<br>GRAYSCALE</span></p>
