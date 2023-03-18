@@ -15,7 +15,36 @@ GleammerRay - Sounds
   }
   
   #page-title p {
-    padding-top: 12.5
+    padding-top: 12.5;
+  }
+  
+  .song {
+    height: auto;
+    margin-top: 30;
+  }
+  
+  .song > * {
+    padding-left: 20;
+  }
+  
+  .song audio {
+    margin-bottom: 30;
+  }
+  
+  #soundcloud {
+    position: relative;
+    top: 15;
+    left: -16vw;
+  }
+  
+  #soundcloud img {
+    margin-top: 15;
+  }
+  
+  #soundcloud div {
+    padding-left: 15;
+    padding-right: 15;
+    color: white;
   }
 </style>
 <body>
@@ -30,6 +59,32 @@ GleammerRay - Sounds
       <p><<<<<<<<<</p>
     </div>
   </div></a>
+  <div class="link-button" id="soundcloud">
+    <a target="_blank" href="https://soundcloud.com/gleammer"><div>
+      <img src="https://a-v2.sndcdn.com/assets/images/sc-icons/favicon-2cadd14bdb.ico" height="32">
+        <p>SoundCloud</p>
+      </div></a>
+    </div>
+  <div class="song section" id="lifeisacharmer">
+    <h1>Life is A Charmer</h1>
+    <audio controls><source src="Gleammer/Life is a Charmer.wav" type="audio/mpeg">Your browser does not support the audio tag.</audio>
+  </div>
+  <div class="song section" id="krytonmarch">
+    <h1>Kryton March</h1>
+    <audio controls><source src="Gleammer/Kryton March.wav" type="audio/mpeg">Your browser does not support the audio tag.</audio>
+  </div>
+  <div class="song section" id="interruption">
+    <h1>Interruption</h1>
+    <audio controls><source src="Gleammer/Interruption.wav" type="audio/mpeg">Your browser does not support the audio tag.</audio>
+  </div>
+  <div class="song section" id="steadysentries">
+    <h1>Steady Sentries</h1>
+    <audio controls><source src="Gleammer/Steady Sentries.wav" type="audio/mpeg">Your browser does not support the audio tag.</audio>
+  </div>
+  <div class="song section" id="hauntedconsole">
+    <h1>Haunted Console</h1>
+    <audio controls><source src="Gleammer/Haunted Console.wav" type="audio/mpeg">Your browser does not support the audio tag.</audio>
+  </div>
 </body>
 <script src="../grayscale.js"></script>
 </html>
