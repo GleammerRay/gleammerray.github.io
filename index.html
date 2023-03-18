@@ -25,15 +25,18 @@ GleammerRay
   body {
     overflow-y: hidden;
   }
+  
+  #epilepsy {
+    background-color: black;
+  }
 
   #epilepsy-warning {
     position: relative;
-    left: -7.6;
+    left: 0;
     right: 0;
-    top: -7.6;
-    width: 111.3%;
-    height: 103.5%;
-    background-color: black;
+    padding-right: 0;
+    width: 100%;
+    height: 100%;
   }
   
   #epilepsy-warning #warning {
@@ -55,11 +58,10 @@ GleammerRay
   }
   
   #epilepsy-continue {
-    position: fixed;
+    position: absolute;
     cursor: pointer;
     width: 100%;
-    top: 75%;
-    left: 0%;
+    bottom: 0%;
     color: white;
     font-size: 6vw;
     text-align: center;
