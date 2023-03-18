@@ -1,0 +1,384 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>
+GleammerRay
+</title>
+<link rel="icon" href="images/gleam.jpg" type="image/icon type">
+</head>
+<script>
+  function onGoPressed() {
+    document.getElementById('epilepsy').remove();
+    document.body.style.setProperty('overflow-y', 'visible');
+    if (!queryString.includes('disclaimer=false')) window.history.pushState('page2', 'GleammerRay', '?disclaimer=false');
+  }
+</script>
+<link rel="stylesheet" href="gleam.css">
+<style>
+  body {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    background-color: yellow;
+    font-family: 'Press Start 2P', cursive;
+  }
+  
+  #epilepsy-warning {
+    position: relative;
+    left: -7.6;
+    right: 0;
+    top: -7.6;
+    width: 111.3%;
+    height: 103.5%;
+    background-color: black;
+  }
+  
+  #epilepsy-warning #warning {
+    font-size: 6vw;
+    position: relative;
+    top: 10%;
+    text-align: center;
+    color: red;
+    padding-right: 9%;
+  }
+  
+  #epilepsy-warning #disclaimer {
+    font-size: 1.7vw;
+    position: relative;
+    top: 7%;
+    text-align: center;
+    color: white;
+    padding-right: 9%;
+  }
+  
+  #epilepsy-continue {
+    position: fixed;
+    cursor: pointer;
+    width: 100%;
+    top: 75%;
+    left: 0%;
+    color: white;
+    font-size: 6vw;
+    text-align: center;
+    font-family: 'Press Start 2P', cursive;
+  }
+  
+  #toggle-grayscale {
+    position: absolute;
+    left: 0%;
+    top: 50%;
+    width: 100%;
+    color: white;
+    font-size: 3vw;
+    font-family: 'Press Start 2P', cursive;
+    text-align: center;
+    align-items: center;
+  }
+  
+  #toggle-grayscale div {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    width: 50%;
+    background-color: red;
+  }
+  
+  #welcome p {
+    padding-top: 12.5
+  }
+  
+  #avatars {
+    position: relative;
+    top: 20;
+    height: 155;
+  }
+  
+  #identities {
+    top: 40;
+  }
+  
+  #identities p {
+    padding-top: 12.5;
+  }
+  
+  .section-image-right {
+    height: 100%;
+    width: 200;
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    right: 8.7%;
+  }
+  
+  .section-image-right img {
+    position: absolute;
+    right: 0;
+  }
+  
+  .section-image-left {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+  }
+  
+  .section-text-right {
+    position: relative;
+    top: -10;
+    display: inline-block;
+    margin-left: 140;
+  }
+  
+  .section-text-left {
+    position: relative;
+    display: inline-block;
+    top: -10;
+    margin-right: 275;
+  }
+  
+  #tools {
+    font-size: 75;
+    height: 200;
+    top: 70;
+  }
+  
+  #pretty {
+    font-size: 75;
+    height: 200;
+    top: 100;
+  }
+  
+  #sounds {
+    image-rendering: pixelated;
+    font-size: 75;
+    height: 200;
+    top: 130;
+  }
+  
+  #toggle-grayscale2 {
+    position: relative;
+    left: 0%;
+    top: 160;
+    width: 100%;
+    color: white;
+    font-size: 3vw;
+    font-family: 'Press Start 2P', cursive;
+    text-align: center;
+    align-items: center;
+  }
+  
+  #toggle-grayscale2 div {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    width: 50%;
+    background-color: red;
+  }
+  
+  #contacts {
+    height: 90;
+    font-size: 15;
+    text-align: center;
+    top: 190;
+  }
+  
+  #contacts p {
+    padding-right: 70;
+  }
+  
+  .compretty {
+    height: 100%;
+    width: 250;
+    background-color: yellow;
+    position: absolute;
+    bottom: 0;
+    right: 8.1%;
+  }
+</style>
+<body>
+  <div id="epilepsy">
+  <div id="epilepsy-warning">
+    <p id="warning"><span>!WARNING!</span></p>
+    <p id="disclaimer"><span>This site contains flashing lights and imagery that may trigger seizures for people with photosensitive epilepsy.<br><br>Viewer discretion is advised.</span></p>
+  </div>
+  <div id="toggle-grayscale">
+    <div onclick="toggleGrayscale()">
+      <p><span>TOGGLE<br>GRAYSCALE</span></p>
+    </div>
+  </div>
+  <div id="epilepsy-continue"
+       onclick="onGoPressed()">
+    <p><span class="blink">↓ GO! ↓</span></p>
+  </div>
+  </div>
+  <div class="section scroll-wrapper" id="welcome">
+    <p class="marquee marquee1"><span>!!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!!&nbsp;</span></p>
+    <p class="marquee marquee2"><span>!!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!! !!!WELCOME!!!&nbsp;</span></p>
+  </div>
+  <div class="section scroll-wrapper" id="avatars">
+    <div class="marquee marquee1-inv">
+      <div>
+        <div class="image-cropper">
+          <img src="images/Dr. SuiuS.jpg" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/fezfish.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/gleamhighres.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/Dr. SuiuS.jpg" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/fezfish.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/gleamhighres.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/Dr. SuiuS.jpg" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/fezfish.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/gleamhighres.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/Dr. SuiuS.jpg" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/fezfish.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/gleamhighres.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/Dr. SuiuS.jpg" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/fezfish.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/gleamhighres.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/Dr. SuiuS.jpg" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/fezfish.png" width="150">
+        </div>
+        <div class="image-cropper"
+             style="margin-right: 20;">
+          <img src="images/gleamhighres.png" width="150">
+        </div>
+      </div>
+    </div>
+    <div class="marquee marquee2-inv">
+      <div>
+        <div class="image-cropper">
+          <img src="images/Dr. SuiuS.jpg" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/fezfish.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/gleamhighres.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/Dr. SuiuS.jpg" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/fezfish.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/gleamhighres.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/Dr. SuiuS.jpg" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/fezfish.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/gleamhighres.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/Dr. SuiuS.jpg" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/fezfish.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/gleamhighres.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/Dr. SuiuS.jpg" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/fezfish.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/gleamhighres.png" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/Dr. SuiuS.jpg" width="150">
+        </div>
+        <div class="image-cropper">
+          <img src="images/fezfish.png" width="150">
+        </div>
+        <div class="image-cropper"
+             style="margin-right: 20;">
+          <img src="images/gleamhighres.png" width="150">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section scroll-wrapper" id="identities">
+    <p class="marquee marquee1"><span>GLEAMMER • PROGARFIELDFAN98102 • ACAB • BLUE LIVES MATTER • DR. SUIUS • SHIT/SHITSELF • SCANNER-MAN • ALL YOUR BASE ARE BELONG TO US •&nbsp;</span></p>
+    <p class="marquee marquee2"><span>GLEAMMER • PROGARFIELDFAN98102 • ACAB • BLUE LIVES MATTER • DR. SUIUS • SHIT/SHITSELF • SCANNER-MAN • ALL YOUR BASE ARE BELONG TO US •&nbsp;</span></p>
+  </div>
+  <a href="tools/tools.html"><div class="section" id="tools">
+    <center><p class="section-text-left"><span>TOOLS</span></p></center>
+    <div class="compretty">
+      <div class="eye">
+        <div class="pupil"></div>
+      </div>
+      <div class="eye">
+        <div class="pupil"></div>
+      </div>
+    </div>
+  </div></a>
+    <a href="pretty/pretty.html"><div class="section" id="pretty">
+    <div class="section-image-left image">
+      <img src="images/gleamhighres.png" height="200">
+    </div>
+    <center><p class="section-text-right"><span>PRETTY</span></p></center>
+  </div></a>
+  <a href="sounds/sounds.html"><div class="section" id="sounds">
+    <center><p class="section-text-left"><span>SOUNDS</span></p></center>
+    <div class="section-image-right image">
+      <img src="images/Bloody Peeking Hood.png" height="200">
+    </div>
+  </div></a>
+  <div id="toggle-grayscale2">
+    <div onclick="toggleGrayscale()">
+      <p><span>TOGGLE<br>GRAYSCALE</span></p>
+    </div>
+  </div>
+  <div class="section" id="contacts">
+    <p>
+      <span>↓ CONTACTS ↓</span>
+      <br>
+      <br>
+      <span>gleam.around.the.world@protonmail.ch</span>
+      <br>
+       <span>Gleammer#5946</span>
+    </p>
+  </div>
+</body>
+<script>
+  const queryString = window.location.search;
+  if (queryString.includes('disclaimer=false')) onGoPressed();
+</script>
+<script src="grayscale.js"></script>
+</html>
