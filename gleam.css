@@ -13,6 +13,20 @@ body {
   font-family: 'Press Start 2P', cursive;
 }
 
+input {
+  font-family: 'Press Start 2P', cursive;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
 .filter-white {
   filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(198deg) brightness(106%) contrast(101%);
 }
@@ -197,6 +211,13 @@ body {
   left: 0;
   width: 100%;
   background-color: red;
+}
+
+.sectiondivider {
+  height: 10;
+  background-color: red;
+  margin-top: 15;
+  margin-bottom: 15;
 }
 
 .eye {

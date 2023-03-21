@@ -1,0 +1,487 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>
+GleammerRay - Games & Secure Chat
+</title>
+<link rel="icon" href="images/gleam.jpg" type="image/icon type">
+<!-- Embed -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="GleammerRay">
+<meta property="og:title" content="GleammerRay - Games & Secure Chat">
+<meta property="og:description" content="Good shit right here">
+<meta property="og:image" content="https://github.com/GleammerRay/gleammerray.github.io/blob/main/images/gleam.jpg?raw=true">
+</head>
+<link rel="stylesheet" href="gleam.css">
+<style>
+  #page-title p {
+    padding-top: 12.5
+  }
+  
+  #page-title {
+    background-color: #444444;
+  }
+  
+  body {
+    background-color: #2a2a2a;
+  }
+  
+  #gamesinfo {
+    margin-top: 30;
+    font-size: 1.5vw;
+    color: white;
+  }
+  
+  .roomcodeinfo {
+    background-color: red;
+    text-align: center;
+    padding-top: 1vw;
+    padding-bottom: 1vw;
+    color: white;
+    font-size: 1.5vw;
+  }
+  
+  #roomcodeheader {
+    margin-top: 10;
+  }
+  
+  #roomcodeinput {
+    display: inline-block;
+    position: relative;
+    background-color: yellow;
+    color: red;
+    height: 4vw;
+    width: 94.2vw;
+    font-size: 2vw;
+    word-wrap: nowrap;
+    text-align: center;
+    white-space: nowrap;
+    padding-top: 1.8vw;
+    margin-top: 0;
+    margin-bottom: 0;
+    overflow: auto;
+  }
+  
+  #roomcodecopybtn {
+    display: inline-block;
+    position: absolute;
+    background-color: red;
+    height: 5.8vw;
+    width: 5.8vw;
+    cursor: pointer;
+  }
+  
+  #roomcodecopybtn img {
+    width: 5vw;
+    margin-top: 0.4vw;
+    margin-left: 0.4vw;
+    image-rendering: pixelated;
+  }
+  
+  #roomcodeinput:focus {
+    outline: 0.5vw solid red;
+  }
+  
+  #roomconnectbtn {
+    margin-top: 20;
+    width: 50vw;
+    margin-left: 25vw;
+    cursor: pointer;
+  }
+  
+  #playerstitle {
+    margin-top: 20;
+    background-color: #444444;
+    color: white;
+    font-size: 1.5vw;
+    border: yellow 5px;
+    border-style: solid;
+    width: 60vw;
+    margin-left: 20vw;
+  }
+  
+  #reconnecttip {
+    color: white;
+    font-size: 2vw;
+  }
+  
+  #playerlist {
+    color: white;
+    font-size: 2vw;
+    width: 100%
+  }
+  
+  #playernameinput {
+    border-style: none;
+    background-color: yellow;
+    outline: 0.3vw solid red;
+    color: red;
+    font-size: 2vw;
+    width: 20vw;
+  }
+  
+  #playernameinput:focus {
+    outline: 0.5vw solid red;
+  }
+  
+  #game-console-title {
+    color: white;
+    background-color: red;
+    font-size: 1.5vw;
+    overflow: hidden;
+  }
+  
+  #game-console-messages {
+    overflow-x: hidden;
+    background-color: #444444;
+    color: white;
+    font-size: 2vw;
+    max-height: 25vw;
+    overflow-y: auto;
+  }
+  
+  #game-console-messages p {
+    margin-left: 15;
+    white-space: initial;
+    word-wrap: break-word;
+  }
+  
+  #game-console-message-input {
+    display: inline-block;
+    border: 0.3vw solid yellow;
+    font-size: 2vw;
+    width: 95%;
+    padding: 0px 0px;
+    height: 5vw;
+    margin-top: 0vw;
+  }
+  
+  #game-console-message-input:focus {
+    outline: 0.5vw solid yellow;
+  }
+  
+  #game-console-message-send-btn {
+    display: inline-block;
+    position: absolute;
+    height: 5vw;
+    width: 5%;
+    background-color: red;
+    color: yellow;
+    font-size: 4.5vw;
+    overflow: hidden;
+  }
+  
+  #game-console-message-send-btn p {
+    margin-top: 0.5vw;
+    cursor: pointer;
+  }
+  
+  .consolemsg {
+    color: yellow;
+  }
+  
+  #game-list-title {
+    margin-top: 40;
+    color: white;
+    background-color: red;
+    font-size: 1.5vw;
+    overflow: hidden;
+  }
+  
+  #game-list {
+    overflow-x: hidden;
+    background-color: #444444;
+    color: white;
+    font-size: 2vw;
+    max-height: 25vw;
+    overflow-y: auto;
+  }
+  
+  #game-list p {
+    margin-left: 15;
+    white-space: initial;
+    word-wrap: break-word;
+  }
+</style>
+<body>
+  <div class="section scroll-wrapper" id="page-title">
+    <p class="marquee marquee1"><span>GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT -&nbsp;</span></p>
+    <p class="marquee marquee2"><span>GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT -&nbsp;</span></p>
+  </div>
+  <a href="./?disclaimer=false"><div id="home-button">
+    <div>
+      <p><<<<<<<<<</p>
+      <p><span>GO HOME</span></p>
+      <p><<<<<<<<<</p>
+    </div>
+  </div></a>
+  <div id="gamesinfo"><center><p>This page offes a peer-to-peer secure chat with RSA encryption and some fun and simple games to enjoy. Speak away, you are safe here!</p></center></div>
+  <div id="gamesinfo"><center><p>Share a room with some friends, pick a game from the list below and start playing!</p></center></div>
+  <div id="roomcodeheader" class="roomcodeinfo"><p1>↓ Share this link with your friends to play together! ↓</p1></div>
+  <p id="roomcodeinput"></p>
+  <div id="roomcodecopybtn" title="Copy room code" onclick="onRoomCodeCopyBtn();"><img src="images/copy-white.png"></img></div>
+  <div id="roomcodefooter" class="roomcodeinfo"><p1>↑ YOUR ROOM LINK ↑</p1></div>
+  <div id="roomconnectbtn" class="roomcodeinfo" onclick="onRoomConnectBtn()"><p id="roomconnectbtntext">>>> CONNECT <<<</p></div>
+  <center><p id="reconnecttip">If you have joined but can't see anyone or if you suddenly can't talk or play with them, try reconnecting.</p></center>
+  <div id="playerstitle"><center><p>↓↓↓ PLAYERS ↓↓↓</p></center></div>
+  <div id="playerlist"><center><p>NOT CONNECTED.</p></center></div>
+  <div id="game-console-title"><center><p>SECURE GAME CONSOLE</p></center></div>
+  <div id="game-console-messages"><p class="consolemsg">No messages. :(</p></div>
+  <input type="message" onkeypress="gameConsoleMessageOnKeyPress(event)" id="game-console-message-input" maxlength="100" placeholder="Enter your message..."></input>
+  <div id="game-console-message-send-btn" onclick="onGameConsoleMessageSendBtn()"><center><p>></p></center></div>
+  <div id="game-list-title"><center><p>GAME SELECTION</p></center></div>
+  <div id="game-list">
+    <p>MegaPONG! (in development)</p>
+  </div>
+  <div id="toggle-grayscale2">
+    <div onclick="toggleGrayscale()">
+      <p><span>TOGGLE<br>GRAYSCALE</span></p>
+    </div>
+  </div>
+  <div class="section" id="contacts">
+    <p>
+      <span>↓ CONTACTS ↓</span>
+      <br>
+      <br>
+      <span>gleam.around.the.world@protonmail.ch</span>
+      <br>
+       <span>Gleammer#5946</span>
+    </p>
+  </div>
+</body>1
+<script>
+  var myName = localStorage.getItem('playerName');
+  if (myName == null) myName = 'N00B';
+  var module = {};
+  var roomcodeinput = document.getElementById('roomcodeinput');
+  var connectbtn = document.getElementById('roomconnectbtn');
+  var gameConsoleMessageInput = document.getElementById('game-console-message-input');
+  var playernameinput;
+  
+  function getValueFromURL(name) {
+    var queryString = window.location.search.split('?');
+    if (queryString.length == 1) return;
+    queryString = queryString[1];
+    if (!queryString.includes(`${name}=`)) return;
+    queryString = queryString.split('&');
+    for (let i = 0; i != queryString.length; i++) {
+      var variable = queryString[i];
+      if (variable.includes(`${name}=`)) return variable.split('=')[1];
+    }
+  }
+  
+  function onRoomCodeCopyBtn() {
+    navigator.clipboard.writeText(roomcodeinput.innerHTML);
+    alert("Room link copied!");
+  }
+  
+  function onRoomConnectBtn() {
+    module.leaveGameRoom();
+    setTimeout(() => module.joinGameRoom(), 2000);
+  }
+  
+  function gameConsoleMessageOnKeyPress(e) {
+    if (e.keyCode == 13) onGameConsoleMessageSendBtn();
+  }
+  
+  function onGameConsoleMessageSendBtn() {
+    var msg = gameConsoleMessageInput.value;
+    if (msg == '') return;
+    gameConsoleMessageInput.value = '';
+    module.sendConsoleMsg(msg);
+  }
+  
+  function roomCodeOnChange() {
+    connectbtn.innerHTML = '<p id="roomconnectbtntext">>>> CONNECT <<<</p>';
+  }
+  
+  function playerNameInputOnChange() {
+    var curName = playernameinput.value;
+    if (myName == curName) return;
+    var newName = curName.match(/^(?:[a-zA-Z0-9\-_][a-zA-Z0-9\-_ ]*)/gm);
+    if (newName != null) {
+      myName = newName[0].toUpperCase();
+      playernameinput.value = myName;
+      localStorage.setItem("playerName", myName);
+      module.sendPlayerName(myName);
+      module.refreshConsoleMessages();
+      return;
+    }
+    playernameinput.value = myName;
+    if (curName.length == 0) {
+      playernameinput.selectionStart = 0;
+      playernameinput.selectionEnd = myName.length;
+    }
+  }
+</script>
+<script src="cryptico.min.js"></script>
+<script type="module">
+  import {selfId, joinRoom} from 'https://cdn.skypack.dev/trystero';
+  const config = {appId: 'https://gleammerray.github.io/games'};
+  
+  var playerList = document.getElementById('playerlist').getElementsByTagName('center')[0];
+  var consoleMessagesElement = document.getElementById('game-console-messages');
+  var consoleMessages = [];
+  
+  function generateRSAKeyPair() {
+    var privateKey = cryptico.generateRSAKey(crypto.randomUUID(), 1024);
+    return [privateKey, cryptico.publicKeyString(privateKey)];
+  }
+  
+  function randomHash(length = 32) {
+    return crypto.randomUUID().replaceAll('-', '').substring(0, length);
+  }
+  
+  function random09() {
+    return Math.floor(Math.random() * 10);
+  }
+  
+  var [privateKey, publicKey] = generateRSAKeyPair();
+  
+  var room;
+  var names = {};
+  var connectedNames = {};
+  var publicKeys = {};
+  var sendPlayerName;
+  var sendConsoleMsg;
+  
+  module.leaveGameRoom = () => {
+    if (room == null) return;
+    consoleMessages = []
+    module.refreshConsoleMessages();
+    room.leave();
+    room = null;
+    names = {};
+    connectedNames = {};
+    publicKeys = {};
+    sendPlayerName = null;
+  }
+  
+  var roomId = getValueFromURL('roomId');
+  
+  function refreshNames() {
+    var nameValues = Object.values(connectedNames);
+    if (nameValues.length == 0) return;
+    playerList.innerHTML = `<p>
+  0 • <input type="text" id="playernameinput" maxlength="10" value="${myName}"
+             onchange   = "playerNameInputOnChange();"
+             onkeypress = "this.onchange();"
+             onpaste    = "this.onchange();"
+             oninput    = "this.onchange();"></input>
+</p>`;
+    for (let i = 1; i != nameValues.length; i++) {
+      playerList.innerHTML += `<p>${i} • ${nameValues[i]}</p>`;
+    }
+    playernameinput = document.getElementById('playernameinput');
+    module.refreshConsoleMessages();
+  }
+  
+  module.refreshConsoleMessages = () => {
+    if (consoleMessages.length == 0) {
+      consoleMessagesElement.innerHTML = '<p class="consolemsg">No messages. :(</p>';
+      return;
+    }
+    consoleMessagesElement.innerHTML = '';
+    for (let i = 0; i != consoleMessages.length; i++) {
+      var msg = consoleMessages[i];
+      if (msg.message == null) {
+        var innerHTML;
+        consoleMessagesElement.innerHTML += `<p class="consolemsg">${names[msg.peerID]} ${msg.info}.</p>`;
+        continue;
+      }
+      consoleMessagesElement.innerHTML += `<p>> ${names[msg.peerID]}: ${msg.message}</p>`;
+    }
+    consoleMessagesElement.scrollTop = consoleMessagesElement.scrollHeight;
+  }
+  
+  module.sendPlayerName = (name) => {
+    if (sendPlayerName == null) return;
+    names[selfId] = name;
+    sendPlayerName(name);
+    module.refreshConsoleMessages();
+  }
+  
+  module.sendConsoleMsg = (msg) => {
+    if (sendConsoleMsg == null) return;
+    var ids = Object.keys(names);
+    for (var i = 1; i != ids.length; i++) {
+      var id = ids[i];
+      var pubKey = publicKeys[id];
+      if (pubKey == null) {
+        sendConsoleMsg(msg, id);
+        continue;
+      }
+      sendConsoleMsg(cryptico.encrypt(msg, pubKey).cipher, id);
+    }
+    consoleMessages.push({ peerID: selfId, message: msg });
+    module.refreshConsoleMessages();
+  }
+  
+  module.joinGameRoom = () => {
+    document.getElementById('roomconnectbtntext').innerHTML = '>>> RECONNECT <<<';
+    if (roomId == null) roomId = randomHash(9);
+    names[selfId] = myName;
+    connectedNames[selfId] = myName;
+    playerList.innerHTML = `<p>
+  0 • <input id="playernameinput" maxlength="10" value="${myName}"
+             onchange   = "playerNameInputOnChange();"
+             onkeypress = "this.onchange();"
+             onpaste    = "this.onchange();"
+             oninput    = "this.onchange();"></input>
+</p>`;
+    playernameinput = document.getElementById('playernameinput');
+    room = joinRoom(config, `gameRoom${roomId}`);
+    var getPlayerName;
+    [sendPlayerName, getPlayerName] = room.makeAction('playerName');
+    var getConsoleMsg;
+    [sendConsoleMsg, getConsoleMsg] = room.makeAction('consoleMsg');
+    const [sendRSAKey, getRSAKey] = room.makeAction('rsaKey');
+    
+    function onPeerJoin(peerID) {
+      sendPlayerName(myName, peerID);
+      sendRSAKey(publicKey, peerID);
+    }
+  
+    function onPeerLeave(peerID) {
+      consoleMessages.push({ peerID: peerID, info: 'disconnected' });
+      delete connectedNames[peerID];
+      delete publicKeys[peerID];
+      refreshNames();
+    }
+  
+    function onGetPlayerName(name, peerID) {
+      if (typeof name != 'string') return;
+      name = name.match(/^(?:[a-zA-Z0-9\-_][a-zA-Z0-9\-_ ]*)/gm);
+      if (name == null) return;
+      if (connectedNames[peerID] == null) consoleMessages.push({ peerID: peerID, info: 'connected' });
+      name = name[0].substring(0, 10).toUpperCase();
+      names[peerID] = name;
+      connectedNames[peerID] = name;
+      refreshNames();
+    }
+    
+    function onGetConsoleMsg(msg, peerID) {
+      if (typeof msg != 'string') return;
+      msg = cryptico.decrypt(msg, privateKey).plaintext;
+      if (msg == null) return;
+      consoleMessages.push({ peerID: peerID, message: msg.substring(0, 100) });
+      module.refreshConsoleMessages();
+    }
+    
+    function onGetRSAKey(key, peerID) {
+      if (typeof key != 'string') return;
+      publicKeys[peerID] = key;
+    }
+    
+    getPlayerName(onGetPlayerName);
+    getConsoleMsg(onGetConsoleMsg);
+    getRSAKey(onGetRSAKey);
+    room.onPeerJoin(onPeerJoin);
+    room.onPeerLeave(onPeerLeave);
+  }
+
+  module.joinGameRoom();
+  roomcodeinput.innerHTML = `${window.location.href.split('?')[0]}?roomId=${roomId}`
+</script>
+<script src="grayscale.js"></script>
+</html>
