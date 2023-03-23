@@ -134,7 +134,6 @@ function start2p() {
     colorSwitchTimer = 0;
     gameReset = true;
     shakeTimer = dt;
-    shakeDirection = -1;
     shakeTimerMax = 1000;
     console.log(player1Health);
     if (player1Health == -1) {
@@ -186,7 +185,7 @@ function start2p() {
         }
       }
       player2Health -= 1;
-      shakeDirection = -1;
+      shakeDirection = 1;
       onGoalHit();
       return;
     }
@@ -195,12 +194,12 @@ function start2p() {
         if (ballPosX < player1Pos + 0.065) {
           ballSpeed *= -1.10;
           shakeTimer = dt;
-          shakeDirection = 1;
+          shakeDirection = -1;
           return;
         }
       }
       player1Health -= 1;
-      shakeDirection = 1;
+      shakeDirection = -1;
       onGoalHit(dt);
       return;
     }
