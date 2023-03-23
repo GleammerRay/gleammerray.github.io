@@ -354,20 +354,19 @@ GleammerRay - Games & Secure Chat
   module.leaveGameRoom = () => {
     if (room == null) return;
     consoleMessages = []
-    module.refreshConsoleMessages();
     room.leave();
     room = null;
     names = {};
     connectedNames = {};
     publicKeys = {};
     sendPlayerName = null;
+    refreshNames();
   }
   
   var roomId = getValueFromURL('roomId');
   
   function refreshNames() {
     var nameValues = Object.values(connectedNames);
-    if (nameValues.length == 0) return;
     playerList.innerHTML = `<p>
   0 • <input type="text" id="playernameinput" maxlength="10" value="${myName}"
              onchange   = "playerNameInputOnChange();"
@@ -375,6 +374,7 @@ GleammerRay - Games & Secure Chat
              onpaste    = "this.onchange();"
              oninput    = "this.onchange();"></input>
 </p>`;
+    if (nameValues.length == 0) return;
     for (let i = 1; i != nameValues.length; i++) {
       playerList.innerHTML += `<p>${i} • ${nameValues[i]}</p>`;
     }
@@ -452,6 +452,9 @@ GleammerRay - Games & Secure Chat
       consoleMessages.push({ peerID: peerID, info: 'disconnected' });
       delete connectedNames[peerID];
       delete publicKeys[peerID];
+      var audio = new Audio('audio/Double Finger Click Second Lower.mp3');
+      audio.loop = false;
+      audio.play();
       refreshNames();
     }
   
@@ -459,7 +462,12 @@ GleammerRay - Games & Secure Chat
       if (typeof name != 'string') return;
       name = name.match(/^(?:[a-zA-Z0-9\-_][a-zA-Z0-9\-_ ]*)/gm);
       if (name == null) return;
-      if (connectedNames[peerID] == null) consoleMessages.push({ peerID: peerID, info: 'connected' });
+      if (connectedNames[peerID] == null) {
+        consoleMessages.push({ peerID: peerID, info: 'connected' });
+        var audio = new Audio('audio/Coin insert into casino slot machine with a beep sound effect reduced.mp3');
+        audio.loop = false;
+        audio.play();
+      }
       name = name[0].substring(0, 10).toUpperCase();
       names[peerID] = name;
       connectedNames[peerID] = name;
