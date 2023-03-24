@@ -31,6 +31,7 @@ function removeLocalStorageWannabes() {
   for (let i = 0; i != localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key == 'grayscale') continue;
+    if (key == 'playerName') continue;
     localStorage.removeItem(key);
     i--;
   }
