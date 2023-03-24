@@ -27,7 +27,17 @@ function loadGrayscale() {
   if (grayscale == "true") enableGrayscale();
 }
 
+function removeLocalStorageWannabes() {
+  for (let i = 0; i != localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key == 'grayscale') continue;
+    localStorage.removeItem(key);
+    i--;
+  }
+}
+
 loadGrayscale();
+removeLocalStorageWannabes();
 
 window.onload = function () {
   setTimeout(function () {
