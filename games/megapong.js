@@ -422,11 +422,15 @@ function mainMenu() {
       }
     }
   }
-  onpointermove = onmousemove;
   
   onclick = (e) => {
     document.body.style.cursor = "auto";
     if (pointedAtStartButton) onStart();
+  }
+  ontouchend = (e) => {
+    var touch = e.changedTouches[0];
+    onmousemove(touch);
+    onclick(e);
   }
   
   stageAddChild(playersTitleText);
