@@ -1,4 +1,4 @@
-import {getValueFromURL, GameRoom, Vector2} from '../gameutils.js';
+import {getValueFromURL, GameRoom, Vector2} from './gameutils.js';
 
 const gameRoom = new GameRoom();
 const rainbowColors = [
