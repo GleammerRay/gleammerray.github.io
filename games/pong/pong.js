@@ -1,4 +1,7 @@
-var rainbowColors = [
+import {getValueFromURL, GameRoom, Vector2} from '../gameutils.js';
+
+const gameRoom = new GameRoom();
+const rainbowColors = [
   0xff0000,
   0xffa500,
   0xffff00,
@@ -7,6 +10,9 @@ var rainbowColors = [
   0x4b0082,
   0xee82ee,
 ];
+const computerPlayerSpeed = 0.0004;
+
+var playerList = {};
 
 function randInt(min, max) {
   return Math.floor((Math.random() * (max - min)) + min);
@@ -16,39 +22,67 @@ function interpolate(start, end, multiplier = 0.5) {
   return (start + end) * multiplier;
 }
 
-var isPlaying = false;
+var gameView = document.getElementById('game-view');
 
-function start2p() {
-  isPlaying = true;
+const app = new PIXI.Application({
+  width: 640,
+  height: 360
+});
+var stageChildren = [];
+app.view.style.position = 'relative';
+gameView.appendChild(app.view);
+
+function stageAddChild(child) {
+  app.stage.addChild(child);
+  stageChildren.push(child);
+}
+
+function clearStage() {
+  for (let i = 0; i != stageChildren.length; i++) {
+    app.stage.removeChild(stageChildren[i]);
+  }
+  stageChildren = [];
+}
+
+function resizeGameView() {
+  if (document.body.clientWidth > document.body.clientHeight) {
+    gameView.style.width = document.body.clientHeight;
+    gameView.style.height = document.body.clientHeight;
+    app.screen.width = document.body.clientHeight;
+    app.screen.height = document.body.clientHeight;
+    app.renderer.view.width = document.body.clientHeight;
+    app.renderer.view.height = document.body.clientHeight;
+    return;
+  }
+  gameView.style.width = document.body.clientWidth;
+  gameView.style.height = document.body.clientWidth;
+  app.screen.width = document.body.clientWidth;
+  app.screen.height = document.body.clientWidth;
+  app.renderer.view.width = document.body.clientWidth;
+  app.renderer.view.height = document.body.clientWidth;
+}
+
+function rotateUntil(vector, degree, shouldStop) {
+  const checkAngle = Math.PI / 2;
+  var changeDir = false;
+  var newVector = new Vector2(vector.x, vector.y);
+  newVector.x = (vector.x * Math.cos(checkAngle)) - (vector.y * Math.sin(checkAngle));
+  newVector.y = (vector.y * Math.cos(checkAngle)) + (vector.x * Math.sin(checkAngle));
+  if (!shouldStop(newVector)) degree = (2  * Math.PI) - degree;
+  newVector = new Vector2(vector.x, vector.y);
+  newVector.x = (vector.x * Math.cos(degree)) - (vector.y * Math.sin(degree));
+  newVector.y = (vector.y * Math.cos(degree)) + (vector.x * Math.sin(degree));
+  return newVector;
+}
+
+function randAngle() {
+  return Math.sin((Math.PI / 2) * (1 + (Math.random() / 2)));
+}
+
+function start2p(computerPlayer2 = false) {
+  var isPlaying = true;
   var player1Victory = false;
   var player2Victory = false;
-  var gameView = document.getElementById('game-view');
-
-  let app = new PIXI.Application({
-    width: 640,
-    height: 360
-  });
-  app.view.style.position = 'relative';
-
-  function resizeGameView() {
-    if (document.body.clientWidth > document.body.clientHeight) {
-      gameView.style.width = document.body.clientHeight;
-      gameView.style.height = document.body.clientHeight;
-      app.screen.width = document.body.clientHeight;
-      app.screen.height = document.body.clientHeight;
-      app.renderer.view.width = document.body.clientHeight;
-      app.renderer.view.height = document.body.clientHeight;
-      return;
-    }
-    gameView.style.width = document.body.clientWidth;
-    gameView.style.height = document.body.clientWidth;
-    app.screen.width = document.body.clientWidth;
-    app.screen.height = document.body.clientWidth;
-    app.renderer.view.width = document.body.clientWidth;
-    app.renderer.view.height = document.body.clientWidth;
-  }
-
-  gameView.appendChild(app.view);
 
   const player1 = PIXI.Sprite.from(PIXI.Texture.WHITE);
   var player1Pos = 0.5;
@@ -67,12 +101,14 @@ function start2p() {
     fill: 0xffffff,
     align: 'center',
   });
-  var ballPosX = 0.5;
+  var ballPosX = 0.05 + (Math.random() * 0.9);
   var ballPosY = 0.5;
-  var ballSpeed = 0;
+  var ballSpeedX = 0;
+  var ballSpeedY = 0;
   var gameReset = true;
   var gameTimer = 0;
   var colorSwitchTimer = 0;
+  var colorIndex = 0;
   var shakeTimer = 0;
   var shakeProgress = 0;
   var shakeDirection = 1;
@@ -96,7 +132,7 @@ function start2p() {
     if (shakeTimer < 0) {
       shakeTimer -= dt;
       shakeProgress -= -shakeTimer / shakeTimerMax;
-      if (shakeTimer < -300) {
+      if (shakeTimer < -shakeTimerMax) {
         shakeProgress = 0;
         shakeTimer = 0;
         shakeTimerMax = 300;
@@ -120,22 +156,22 @@ function start2p() {
 
   function onGoalHit(dt) {
     function onVictory() {
-      app.stage.removeChild(ball);
-      app.stage.removeChild(player1);
-      app.stage.removeChild(player1HealthText);
-      app.stage.removeChild(player2);
-      app.stage.removeChild(player2HealthText);
+      clearStage();
+      stageAddChild(gameTimerText);
     }
-    
+
+    ballPosX = 0.05 + (Math.random() * 0.9);    
     ballPosY = 0.5;
-    ballSpeed = 0;
+    ballSpeedX = 0;
+    ballSpeedY = 0;
     gameTimer = 0;
     gameTimerText.style.fill = 0xff1010;
     colorSwitchTimer = 0;
+    colorIndex = 0;
     gameReset = true;
+    shakeProgress = 0;
     shakeTimer = dt;
     shakeTimerMax = 1000;
-    console.log(player1Health);
     if (player1Health == -1) {
       onVictory();
       player2Victory = true;
@@ -156,11 +192,13 @@ function start2p() {
         gameTimerText.text = 'GO!';
         gameTimerText.x += app.screen.width * (Math.random() / 100);
         gameTimerText.y += app.screen.height * (Math.random() / 100);
-        gameTimerText.style.fontSize = app.screen.width / 15;
+        gameTimerText.style.fontSize = app.screen.width / 10;
         colorSwitchTimer += dt;
         if (colorSwitchTimer > 50) {
-          gameTimerText.style.fill = rainbowColors[randInt(0, 6)];
+          gameTimerText.style.fill = rainbowColors[colorIndex];
           colorSwitchTimer = 0;
+          colorIndex++;
+          if (colorIndex == 7) colorIndex = 0;
         }
         return;
       }
@@ -168,17 +206,24 @@ function start2p() {
       return;
     }
     if (gameReset) {
-      if (Math.round(Math.random()) == 0) ballSpeed = 0.0003;
-      else ballSpeed = -0.0003;
+      if (Math.round(Math.random()) == 0) ballSpeedX = 0.15;
+      else ballSpeedX = -0.15;
+      if (Math.round(Math.random()) == 0) ballSpeedY = 0.15;
+      else ballSpeedY = -0.15;
       gameReset = false;
       return;
     }
     gameTimerText.text = '';
-    ballPosY += ballSpeed * app.screen.width * (dt / 1000);
+    ballPosX += ballSpeedX * (dt / 1000);
+    ballPosY += ballSpeedY * (dt / 1000);
     if (ballPosY < 0.05) {
-      if (ballPosX > player2Pos - 0.06) {
-        if (ballPosX < player2Pos + 0.06) {
-          ballSpeed *= -1.10;
+      // Player 2 goal
+      if (ballPosX > player2Pos - 0.065) {
+        if (ballPosX < player2Pos + 0.065) {
+          ballPosY = 0.05;
+          var newSpeed = rotateUntil(new Vector2(ballSpeedX, ballSpeedY), randAngle(), (vector) => ballPosY + vector.y > 0.05);
+          ballSpeedX = newSpeed.x * 1.15;
+          ballSpeedY = newSpeed.y * 1.15;
           shakeTimer = dt;
           shakeDirection = 1;
           return;
@@ -186,13 +231,17 @@ function start2p() {
       }
       player2Health -= 1;
       shakeDirection = 1;
-      onGoalHit();
+      onGoalHit(dt);
       return;
     }
     if (ballPosY > 0.95) {
+      // Player 1 goal
       if (ballPosX > player1Pos - 0.065) {
         if (ballPosX < player1Pos + 0.065) {
-          ballSpeed *= -1.10;
+          ballPosY = 0.95;
+          var newSpeed = rotateUntil(new Vector2(ballSpeedX, ballSpeedY), randAngle(), (vector) => ballPosY + vector.y < 0.95);
+          ballSpeedX = newSpeed.x * 1.15;
+          ballSpeedY = newSpeed.y * 1.15;
           shakeTimer = dt;
           shakeDirection = -1;
           return;
@@ -203,42 +252,71 @@ function start2p() {
       onGoalHit(dt);
       return;
     }
+    
+    if (ballPosX < 0.05) {
+      ballPosX = 0.05;
+      var newSpeed = rotateUntil(new Vector2(ballSpeedX, ballSpeedY), randAngle(), (vector) => (ballPosX + vector.x) > 0.05);
+      ballSpeedX = newSpeed.x;
+      ballSpeedY = newSpeed.y;
+      return;
+    }
+    
+    if (ballPosX > 0.95) {
+      ballPosX = 0.95;
+      var newSpeed = rotateUntil(new Vector2(ballSpeedX, ballSpeedY), randAngle(), (vector) => (ballPosX + vector.x) < 0.95);
+      ballSpeedX = newSpeed.x;
+      ballSpeedY = newSpeed.y;
+    }
   }
-
-  function movePlayer1() {
-    player1.x = (player1Pos - 0.05) * app.screen.width;
+  
+  function movePlayer2(dt) {
+    if (player2Pos < ballPosX - 0.005) {
+      player2Pos += dt * computerPlayerSpeed;
+      return;
+    }
+    if (player2Pos > ballPosX + 0.005) {
+      player2Pos -= dt * computerPlayerSpeed;
+      return;
+    }
+    player2Pos = ballPosX;
   }
   
   var victoryTimer = 0;
   
-  function showVictory() {
+  function showVictory(dt) {
     function onVictory() {
       gameTimerText.style.fontSize = app.screen.width / 15;
     }
     
     if (player1Victory) {
       onVictory();
+      colorSwitchTimer += dt;
+      if (colorSwitchTimer > 100) {
+        gameTimerText.style.fill = rainbowColors[randInt(0, 6)];
+        colorSwitchTimer = 0;
+      }
       gameTimerText.text = 'Player 1 Wins!';
       return true;
     }
     if (player2Victory) {
       onVictory();
+      colorSwitchTimer += dt;
+      if (colorSwitchTimer > 100) {
+        gameTimerText.style.fill = rainbowColors[randInt(0, 6)];
+        colorSwitchTimer = 0;
+      }
       gameTimerText.text = 'Player 2 Wins!';
       return true;
     }
   }
   
-  var lastDt = 0;
-  window.main = (dt) => {
+  function update() {
     if (!isPlaying) return;
-    window.requestAnimationFrame(main);
-    var temp = dt;
-    dt = dt - lastDt;
-    lastDt = temp;
+    var dt = app.ticker.deltaMS;
     resizeGameView();
     gameTimerText.y = app.screen.height / 3;
     gameTimerText.x = (app.screen.width / 2) - (gameTimerText.width / 2);
-    if (showVictory()) return;
+    if (showVictory(dt)) return;
     player1HealthText.text = `${player1Health}HP`;
     player1HealthText.style.fontSize = app.screen.width / 22;
     player1HealthText.x = app.screen.width - (app.screen.width / 45) - player1HealthText.width;
@@ -259,27 +337,112 @@ function start2p() {
     moveBall(dt);
     ball.x = (ballPosX - 0.01) * app.screen.width;
     ball.y = (ballPosY - 0.01) * app.screen.height;
-    movePlayer1();
-    player2.x = (player2Pos - 0.05) * app.screen.height;
+    player1.x = (player1Pos - 0.05) * app.screen.width;
+    if (computerPlayer2) movePlayer2(dt);
+    player2.x = (player2Pos - 0.05) * app.screen.width;
     shake(dt);
   }
+  app.ticker.add(update);
   onmousemove = (e) => {
     player1Pos = (e.clientX - ((document.body.clientWidth - app.screen.width) / 2)) / app.screen.width;
   }
-  window.requestAnimationFrame(main);
-  app.stage.addChild(player1);
-  app.stage.addChild(player2);
-  app.stage.addChild(ball);
-  app.stage.addChild(gameTimerText);
-  app.stage.addChild(player1HealthText);
-  app.stage.addChild(player2HealthText);
+  stageAddChild(player1);
+  stageAddChild(player2);
+  stageAddChild(ball);
+  stageAddChild(gameTimerText);
+  stageAddChild(player1HealthText);
+  stageAddChild(player2HealthText);
 }
 
-WebFont.load({
-  google: {
-    families: ['Press Start 2P']
-  },
-  active: e => {
-    start2p();
+function mainMenu() {
+  var isPlaying = true;
+  
+  function onStart() {
+    onclick = null;
+    isPlaying = false;
+    app.ticker.remove(update);
+    clearStage();
+    start2p(true);
   }
-});
+  
+  var mouseX = 0;
+  var mouseY = 0;
+  var pointedAtStartButton = false;
+  
+  const playersTitleText = new PIXI.Text('↓ PLAYERS ↓', {
+    fontFamily: 'Press Start 2P',
+    fill: 0xffffff,
+    align: 'center',
+  });
+  const playerListText = new PIXI.Text('This game is\ncurrently in\nsingle-player\nmode (against\ncomputer).\n\nVisit us in a\nweek or two\nto play it\ntogether!', {
+    fontFamily: 'Press Start 2P',
+    fill: 0xffffff,
+    align: 'left',
+  });
+  const startButtonText = new PIXI.Text('>>> START <<<', {
+    fontFamily: 'Press Start 2P',
+    fill: 0xffffff,
+    align: 'left',
+  });
+  const startButton = PIXI.Sprite.from(PIXI.Texture.WHITE);
+  startButton.tint = 0xFF0000;
+  
+  function update() {
+    if (!isPlaying) return;
+    resizeGameView();
+    playersTitleText.style.fontSize = app.screen.width / 15;
+    playersTitleText.x = app.screen.width / 7;
+    playersTitleText.y = app.screen.height / 20;
+    playerListText.style.fontSize = app.screen.width / 30;
+    playerListText.x = app.screen.width / 4;
+    playerListText.y = app.screen.height / 6;
+    startButtonText.style.fontSize = app.screen.width / 20;
+    startButtonText.x = app.screen.width / 5.9;
+    startButtonText.y = app.screen.height / 1.2;
+    startButton.width = app.screen.width / 3.5;
+    startButton.height = app.screen.height / 9;
+    startButton.x = app.screen.width / 2.85;
+    startButton.y = app.screen.height / 1.25;
+  }
+  app.ticker.add(update);
+  onmousemove = (e) => {
+    mouseX = (e.clientX - ((document.body.clientWidth - app.screen.width) / 2));
+    mouseY = e.clientY;
+    document.body.style.cursor = "auto";
+    pointedAtStartButton = false;
+    if (mouseX > (app.screen.width / 2.90)) {
+      if (mouseX < (app.screen.width / 1.58)) {
+        if (mouseY > (app.screen.height / 1.25)) {
+          if (mouseY < (app.screen.height / 1.09)) {
+            document.body.style.cursor = "pointer";
+            pointedAtStartButton = true;
+          }
+        }
+      }
+    }
+  }
+  
+  onclick = (e) => {
+    document.body.style.cursor = "auto";
+    if (pointedAtStartButton) onStart();
+  }
+  
+  stageAddChild(playersTitleText);
+  stageAddChild(playerListText);
+  stageAddChild(startButton);
+  stageAddChild(startButtonText);
+}
+
+function onConnected() {
+  WebFont.load({
+    google: {
+      families: ['Press Start 2P']
+    },
+    active: e => {
+      mainMenu();
+    }
+  });
+}
+
+//gameRoom.onConnected(onConnected);
+onConnected();

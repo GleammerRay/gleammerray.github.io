@@ -95,7 +95,7 @@ GleammerRay - Games & Secure Chat
     background-color: #444444;
     color: white;
     font-size: 1.5vw;
-    border: yellow 5px;
+    border: yellow 0.8vw;
     border-style: solid;
     width: 60vw;
     margin-left: 20vw;
@@ -203,10 +203,45 @@ GleammerRay - Games & Secure Chat
     text-shadow: -3px 3px 0px black;
   }
   
-  #game-list p {
-    margin-left: 15;
+  .game-list-game-title {
     white-space: initial;
     word-wrap: break-word;
+    display: inline-block;
+    margin-top: 2.5vw;
+    margin-left: 2vw;
+  }
+  
+  .start-button {
+    position: relative;
+    background-color: red;
+    display: flex;
+    align-items: center;
+    border: yellow 0.8vw;
+    border-style: solid;
+    width: 15vw;
+    text-align: center;
+    float: right;
+    margin-top: 1vw;
+    margin-right: 1vw;
+    margin-bottom: 1vw;
+    cursor: pointer;
+    
+  }
+  
+  .start-button p {
+    margin-top: 1vw;
+    margin-bottom: 1vw;
+    width: 100vw;
+  }
+  
+  .start-button:active {
+    border-style: none;
+    width: 16.7vw;
+    height: 5.6vw;
+  }
+  
+  .start-button:active p {
+  
   }
 </style>
 <body>
@@ -237,7 +272,8 @@ GleammerRay - Games & Secure Chat
   <div id="game-console-message-send-btn" onclick="onGameConsoleMessageSendBtn()"><center><p>></p></center></div>
   <div id="game-list-title"><center><p>GAME SELECTION</p></center></div>
   <div id="game-list">
-    <p>MegaPONG! (in development)</p>
+    <p class="game-list-game-title">MegaPONG! (in development)</p>
+    <div class="start-button" onclick="startMegaPong()"><p>START</p></div>
   </div>
   <div id="toggle-grayscale2">
     <div onclick="toggleGrayscale()">
@@ -263,6 +299,7 @@ GleammerRay - Games & Secure Chat
   var connectbtn = document.getElementById('roomconnectbtn');
   var gameConsoleMessageInput = document.getElementById('game-console-message-input');
   var playernameinput;
+  var currentGameURL;
   
   function getValueFromURL(name) {
     var queryString = window.location.search.split('?');
@@ -282,8 +319,8 @@ GleammerRay - Games & Secure Chat
   }
   
   function onRoomConnectBtn() {
-    module.leaveGameRoom();
-    setTimeout(() => module.joinGameRoom(), 2000);
+    module.leaveChatRoom();
+    setTimeout(() => module.joinChatRoom(), 2000);
   }
   
   function gameConsoleMessageOnKeyPress(e) {
@@ -319,6 +356,13 @@ GleammerRay - Games & Secure Chat
       playernameinput.selectionEnd = myName.length;
     }
   }
+  
+  function startMegaPong() {
+    module.leaveGameRoom();
+    const gameRoomId = module.joinGameRoom('megapong');
+    currentGameURL = `/games/pong/pong.html?gameRoomId=${gameRoomId}&hostSelfId=${module.selfId}`;
+    window.open(currentGameURL, '_blank');
+  }
 </script>
 <script src="cryptico.min.js"></script>
 <script type="module">
@@ -344,7 +388,11 @@ GleammerRay - Games & Secure Chat
   
   var [privateKey, publicKey] = generateRSAKeyPair();
   
+  module.selfId = selfId;
+  
   var room;
+  var gameRoom;
+  var gameAdminId;
   var names = {};
   var connectedNames = {};
   var publicKeys = {};
@@ -352,7 +400,15 @@ GleammerRay - Games & Secure Chat
   var sendConsoleMsg;
   
   module.leaveGameRoom = () => {
+    if (gameRoom == null) return;
+    gameRoom.leave();
+    gameRoom = null;
+    gameAdminId = null;
+  }
+  
+  module.leaveChatRoom = () => {
     if (room == null) return;
+    module.leaveGameRoom();
     consoleMessages = []
     room.leave();
     room = null;
@@ -423,7 +479,23 @@ GleammerRay - Games & Secure Chat
     module.refreshConsoleMessages();
   }
   
-  module.joinGameRoom = () => {
+  module.joinGameRoom = (gameName) => {
+    const gameRoomId = `${selfId}-0-${gameName}-${randomHash(16)}`;
+    gameRoom = joinRoom(config, gameRoomId);
+    const sendAdminId = gameRoom.makeAction('adminId')[0];
+    function onPeerJoin(peerID) {
+      if (gameAdminId == null) gameAdminId = peerID;
+      sendAdminId(gameAdminId, peerID);
+    }
+    function onPeerLeave(peerID) {
+      if (peerID == gameAdminId) module.leaveGameRoom();
+    }
+    gameRoom.onPeerJoin(onPeerJoin);
+    gameRoom.onPeerLeave(onPeerLeave);
+    return gameRoomId;
+  }
+  
+  module.joinChatRoom = () => {
     document.getElementById('roomconnectbtntext').innerHTML = '>>> RECONNECT <<<';
     if (roomId == null) roomId = randomHash(9);
     names[selfId] = myName;
@@ -494,7 +566,7 @@ GleammerRay - Games & Secure Chat
     room.onPeerLeave(onPeerLeave);
   }
 
-  module.joinGameRoom();
+  module.joinChatRoom();
   roomcodeinput.innerHTML = `${window.location.href.split('?')[0]}?roomId=${roomId}`
 </script>
 <script src="grayscale.js"></script>
