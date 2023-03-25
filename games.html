@@ -272,7 +272,7 @@ GleammerRay - Games & Secure Chat
   <div id="game-console-message-send-btn" onclick="onGameConsoleMessageSendBtn()"><center><p>></p></center></div>
   <div id="game-list-title"><center><p>GAME SELECTION</p></center></div>
   <div id="game-list">
-    <p class="game-list-game-title">MegaPONG! (in development)</p>
+    <p class="game-list-game-title">MegaPONG! 1p (offline, in development)</p>
     <div class="start-button" onclick="startMegaPong()"><p>START</p></div>
   </div>
   <div id="toggle-grayscale2">
@@ -360,7 +360,7 @@ GleammerRay - Games & Secure Chat
   function startMegaPong() {
     module.leaveGameRoom();
     const gameRoomId = module.joinGameRoom('megapong');
-    currentGameURL = `/games/pong/pong.html?gameRoomId=${gameRoomId}&hostSelfId=${module.selfId}`;
+    currentGameURL = `/games/megapong.html?gameRoomId=${gameRoomId}&hostSelfId=${module.selfId}`;
     window.open(currentGameURL, '_blank');
   }
 </script>
