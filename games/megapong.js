@@ -346,6 +346,7 @@ function start2p(computerPlayer2 = false) {
   onmousemove = (e) => {
     player1Pos = (e.clientX - ((document.body.clientWidth - app.screen.width) / 2)) / app.screen.width;
   }
+  onpointermove = onmousemove;
   stageAddChild(player1);
   stageAddChild(player2);
   stageAddChild(ball);
@@ -421,6 +422,7 @@ function mainMenu() {
       }
     }
   }
+  onpointermove = onmousemove;
   
   onclick = (e) => {
     document.body.style.cursor = "auto";
