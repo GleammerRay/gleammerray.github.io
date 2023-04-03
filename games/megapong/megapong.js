@@ -1,5 +1,5 @@
-import {getValueFromURL, GameRoom} from './gameutils.js';
-import {Vector2, Transform2D, BoxCollider2D, Rect2D} from './simplephys.js';
+import {getValueFromURL, GameRoom} from '../lib/scripts/gameutils.js';
+import {Vector2, Transform2D, BoxCollider2D, Rect2D} from '../lib/scripts/simplephys.js';
 
 const gameRoom = new GameRoom();
 const rainbowColors = [
