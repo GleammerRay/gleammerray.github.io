@@ -214,7 +214,7 @@ class VisualPlayer {
 }
 
 var playersInfo = {
-  'host': new PlayerInfo('host', '(G)!HOST', PlayerControl.pointer),
+  'host': new PlayerInfo('host', 'You', PlayerControl.pointer),
 };
 var localPlayers = ['host'];
 var alivePlayers = {
@@ -541,9 +541,6 @@ function start2p() {
       if (player.checkGoalCollision(ballCol)) {
         if (player.checkCollision(ballCol)) {
           const playerPosRel = player.position.rotate((2 * Math.PI) - player.transform.rotation);
-          ballPos.rotateSelf((2 * Math.PI) - player.transform.rotation);
-          ballPos.y = playerPosRel.y - 0.01751;
-          ballPos.rotateSelf(player.transform.rotation);
           var newSpeed = rotateUntil(new Vector2(ballSpeed.x, ballSpeed.y), randAngle(), (vec) => {
             var ballPosBak = new Vector2(ballPos.x, ballPos.y);
             ballPos.x += vec.x;
@@ -553,6 +550,9 @@ function start2p() {
             ballPos.y = ballPosBak.y;
             return !colTest;
           });
+          ballPos.rotateSelf((2 * Math.PI) - player.transform.rotation);
+          ballPos.y = playerPosRel.y - 0.01751;
+          ballPos.rotateSelf(player.transform.rotation);
           shakeDirection = ballSpeed.normalize();
           ballSpeed.x = newSpeed.x * 1.15;
           ballSpeed.y = newSpeed.y * 1.15;
