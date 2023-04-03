@@ -180,6 +180,7 @@ class VisualPlayer {
     for (let i = 0; i != this.spriteIndexes.length; i++) {
       stageRemoveChild(this.spriteIndexes[i]);
     }
+    this.spriteIndexes = [];
   }
   
   addToStage() {
@@ -607,7 +608,7 @@ function start2p() {
 
     if (ballPos.y < 0.0125) {
       ballPos.y = 0.0125;
-      var newSpeed = rotateUntil(new Vector2(ballSpeed.x, ballSpeed.y), randAngle(), (vector) => vector.y > 0.0125);
+      var newSpeed = rotateUntil(new Vector2(ballSpeed.x, ballSpeed.y), randAngle(), (vector) => ballPos.y + vector.y > 0.0125);
       ballSpeed.x = newSpeed.x;
       ballSpeed.y = newSpeed.y;
       return;
@@ -615,7 +616,7 @@ function start2p() {
 
     if (ballPos.y > 0.9875) {
       ballPos.y = 0.9875;
-      var newSpeed = rotateUntil(new Vector2(ballSpeed.x, ballSpeed.y), randAngle(), (vector) => vector.y < 0.9875);
+      var newSpeed = rotateUntil(new Vector2(ballSpeed.x, ballSpeed.y), randAngle(), (vector) => ballPos.y + vector.y < 0.9875);
       ballSpeed.x = newSpeed.x;
       ballSpeed.y = newSpeed.y;
       return;
@@ -623,7 +624,7 @@ function start2p() {
 
     if (ballPos.x < 0.0125) {
       ballPos.x = 0.0125;
-      var newSpeed = rotateUntil(new Vector2(ballSpeed.x, ballSpeed.y), randAngle(), (vector) => vector.x > 0.0125);
+      var newSpeed = rotateUntil(new Vector2(ballSpeed.x, ballSpeed.y), randAngle(), (vector) => ballPos.x + vector.x > 0.0125);
       ballSpeed.x = newSpeed.x;
       ballSpeed.y = newSpeed.y;
       return;
@@ -631,7 +632,7 @@ function start2p() {
     
     if (ballPos.x > 0.9875) {
       ballPos.x = 0.9875;
-      var newSpeed = rotateUntil(new Vector2(ballSpeed.x, ballSpeed.y), randAngle(), (vector) => vector.x < 0.9875);
+      var newSpeed = rotateUntil(new Vector2(ballSpeed.x, ballSpeed.y), randAngle(), (vector) => ballPos.x + vector.x < 0.9875);
       ballSpeed.x = newSpeed.x;
       ballSpeed.y = newSpeed.y;
       return;
