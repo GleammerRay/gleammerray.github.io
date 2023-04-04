@@ -393,6 +393,7 @@ GleammerRay - Games & Secure Chat
   var room;
   var gameRoom;
   var gameAdminId;
+  var playerInfo = {};
   var names = {};
   var connectedNames = {};
   var publicKeys = {};
@@ -404,6 +405,7 @@ GleammerRay - Games & Secure Chat
     gameRoom.leave();
     gameRoom = null;
     gameAdminId = null;
+    playerInfo = {};
   }
   
   module.leaveChatRoom = () => {
@@ -482,10 +484,16 @@ GleammerRay - Games & Secure Chat
   module.joinGameRoom = (gameName) => {
     const gameRoomId = `${selfId}-0-${gameName}-${randomHash(16)}`;
     gameRoom = joinRoom(config, gameRoomId);
-    const sendAdminId = gameRoom.makeAction('adminId')[0];
+    const sendWelcome = gameRoom.makeAction('welcome')[0];
     function onPeerJoin(peerID) {
-      if (gameAdminId == null) gameAdminId = peerID;
-      sendAdminId(gameAdminId, peerID);
+      if (gameAdminId == null) {
+        gameAdminId = peerID;
+        playerInfo[peerID] = { name: myName };
+      }
+      sendWelcome({
+          adminId: gameAdminId,
+          playerInfo: playerInfo,
+        }, peerID);
     }
     function onPeerLeave(peerID) {
       if (peerID == gameAdminId) module.leaveGameRoom();

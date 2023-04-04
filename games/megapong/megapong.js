@@ -879,5 +879,5 @@ function onConnected() {
   });
 }
 
-//gameRoom.onConnected(onConnected);
+gameRoom.onConnected(() => gameRoom.makeAction('test'));
 onConnected();

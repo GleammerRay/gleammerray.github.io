@@ -19,10 +19,11 @@ export const hostSelfId = getValueFromURL('hostSelfId');
 export class GameRoom {
   gameRoom;
   playerNames;
-  connectedPlayerNames;
+  playerInfo = {};
+  connectedPlayerInfo = {};
+  #knownPlayerInfo = {};
   adminId;
   #isConnected;
-  #sendPlayerName;
   #onConnected;
   #onDisconnected;
   #onPeerJoin;
@@ -36,28 +37,36 @@ export class GameRoom {
     return this.#isConnected;
   }
   
-  #onGetPlayerName(name, peerId) {
-    this.playerNames[peerId] = name;
-    this.connectedPlayerNames[peerId] = name;
-    if (this.#isConnected) return;
-    if (peerId != this.adminId) return;
-    this.#isConnected = true;
-    if (this.#onConnected != null) this.#onConnected();
-  }
-  
-  #onGetAdminId(adminId, peerId) {
-    if (peerId != hostSelfId) return;
-    if (this.adminId == null) {
-      this.#isConnected = false;
-      if (this.#onDisconnected != null) this.#onDisconnected();
-    }
-    this.adminId = adminId;
-    var connectedPeerIds = Object.keys(this.connectedPlayerNames);
-    for (let i = 0; i != connectedPeerIds.length; i++) {
-      if (connectedPeerIds[i] != adminId) continue;
+  #checkIsConnected() {
+    const connectedPeerIds = Object.keys(this.connectedPlayerInfo);
+    if (connectedPeerIds.includes(this.adminId)) {
       this.#isConnected = true;
       if (this.#onConnected != null) this.#onConnected();
     }
+  }
+  
+  #onGetPlayerInfo(playerInfo, peerId) {
+    if (peerId != hostSelfId) return;
+    this.#knownPlayerInfo = playerInfo;
+    const playerInfoKeys = Object.keys(playerInfo);
+    for (let i = 0; i != playerInfoKeys.length; i++) {
+      const key = playerInfoKeys[i];
+      this.playerInfo[key] = playerInfo[key];
+    }
+    if (this.#isConnected) return;
+    this.#checkIsConnected();
+  }
+  
+  #onGetWelcome(welcome, peerId) {
+    if (peerId != hostSelfId) return;
+    console.log(welcome);
+    if (this.connectedPlayerInfo[selfId] == null) this.connectedPlayerInfo[selfId] = welcome.playerInfo[selfId];
+    if (this.#isConnected) {
+      this.#isConnected = false;
+      if (this.#onDisconnected != null) this.#onDisconnected();
+    }
+    this.adminId = welcome.adminId;
+    this.#onGetPlayerInfo(welcome.playerInfo, peerId);
   }
   
   onConnected(callback) {
@@ -68,47 +77,62 @@ export class GameRoom {
     this.#onDisconnected = callback;
   }
   
-  onPeerJoin(callBack) {
+  onPeerJoin(callback) {
     this.#onPeerJoin = callback;
   }
 
-  onPeerLeave(callBack) {
+  onPeerLeave(callback) {
     this.#onPeerLeave = callback;
   }
 
-  constructor(gameRoomId, hostSelfId) {
+  constructor(gameRoomId = null, hostSelfId = null) {
     if (gameRoomId == null) gameRoomId = getValueFromURL('gameRoomId');
-    if (hostSelfId == null) hostSelfId = getValueFromURL('hostSelfId');  
-    this.connectedPlayerNames = {};
-    this.connectedPlayerNames[selfId] = 'N00B';
+    if (hostSelfId == null) hostSelfId = getValueFromURL('hostSelfId');
     this.playerNames = {};
     this.#isConnected = false;
     this.gameRoom = joinRoom(config, gameRoomId);
-    var getPlayerName;
-    [this.#sendPlayerName, getPlayerName] = this.gameRoom.makeAction('playerName');
-    const getAdminId = this.gameRoom.makeAction('adminId')[1];
-    getPlayerName((a, b) => this.#onGetPlayerName(a, b));
-    getAdminId((a, b) => this.#onGetAdminId(a, b));
+    const getWelcome = this.gameRoom.makeAction('welcome')[1];
+    getWelcome((a, b) => this.#onGetWelcome(a, b));
     this.gameRoom.onPeerJoin((peerId) => {
-      if (this.#onPeerJoin != null) this.#onPeerJoin();
-      this.#sendPlayerName(this.connectedPlayerNames[selfId], peerId);
+      var playerInfo = this.playerInfo[peerId];
+      if (playerInfo == null) return;
+      this.connectedPlayerInfo[peerId] = playerInfo;
+      if (!this.#isConnected) this.#checkIsConnected();
+      if (this.#onPeerJoin != null) this.#onPeerJoin(peerId);
     });
     this.gameRoom.onPeerLeave((peerId) => {
-      if (this.#onPeerLeave != null) this.#onPeerLeave();
       if (peerId == adminId) {
         this.#isConnected = false;
         if (this.#onDisconnected != null) this.#onDisconnected();
       }
-      delete this.connectedPlayerNames[peerId];
+      delete this.connectedPlayerInfo[peerId];
+      if (this.#onPeerLeave != null) this.#onPeerLeave(peerId);
     });
   }
-  
-  sendPlayerName(name) {
-    if (this.#sendPlayerName == null) return;
-    var playerIds = Object.keys(connectedPlayerNames);
-    for (let i = 0; i != playerIds.length; i++) {
-      this.#sendPlayerName(name, playerIds[i]);
+
+  makeAction(name) {
+    var adminId = this.adminId;
+    const [send, get] = this.gameRoom.makeAction(name);
+    var safeSend;
+    var safeGet;
+    if (adminId == selfId) {
+      safeSend = send;
+      safeGet = get;
+      console.log('cool B)');
+    } else {
+      safeSend = (data) => send(data, this.adminId);
+      safeGet = (callback) => {
+        get((data, peerId) => {
+          if (peerId != adminId) return;
+          callback(data);
+        });
+      };
+      console.log('less cool B(');
     }
+    return [
+      safeSend,
+      safeGet,
+    ];
   }
 }
 
