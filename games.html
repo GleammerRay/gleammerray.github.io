@@ -183,6 +183,16 @@ GleammerRay - Games & Secure Chat
   .consolemsg {
     color: yellow;
   }
+
+  #submit-issue {
+    margin-left: 1vw;
+    color: white;
+    font-size: 1.5vw;
+  }
+
+  #submit-issue a {
+    color: white;
+  }
   
   #game-list-title {
     margin-top: 40;
@@ -194,19 +204,20 @@ GleammerRay - Games & Secure Chat
   }
   
   #game-list {
+    position: relative;
+    align-items: center;
     overflow-x: hidden;
     background-color: #444444;
     color: white;
     font-size: 2vw;
-    max-height: 25vw;
-    overflow-y: auto;
     text-shadow: -3px 3px 0px black;
   }
   
   .game-list-game-title {
+    position: relative;
     white-space: initial;
     word-wrap: break-word;
-    display: inline-block;
+    display: block;
     margin-top: 2.5vw;
     margin-left: 2vw;
   }
@@ -220,12 +231,8 @@ GleammerRay - Games & Secure Chat
     border-style: solid;
     width: 15vw;
     text-align: center;
-    float: right;
-    margin-top: 1vw;
-    margin-right: 1vw;
-    margin-bottom: 1vw;
+    margin-bottom: 2vw;
     cursor: pointer;
-    
   }
   
   .start-button p {
@@ -277,10 +284,12 @@ GleammerRay - Games & Secure Chat
   <div id="game-console-messages"><p class="consolemsg">No messages. :(</p></div>
   <input type="message" onkeypress="gameConsoleMessageOnKeyPress(event)" id="game-console-message-input" maxlength="100" placeholder="Enter your message..."></input>
   <div id="game-console-message-send-btn" onclick="onGameConsoleMessageSendBtn()"><center><p>></p></center></div>
+  <div id="submit-issue"><p>Want to help us fix a bug in a game? Submit an issue at <a href="https://github.com/GleammerRay/gleammerray.github.io/issues" target="_blank">https://github.com/GleammerRay/gleammerray.github.io/issues</a></p></div>
   <div id="game-list-title"><center><p>GAME SELECTION</p></center></div>
   <div id="game-list">
-    <p class="game-list-game-title">MegaPONG! 1p (offline, in development)</p>
-    <div class="start-button" onclick="startMegaPong()"><p>START</p></div>
+    <p class="game-list-game-title">MegaPONG! - Now with multiplayer!<br><br>Experience the classic feel of Pong with 1, 2, 5, 10 or even more players! <br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- by Gleam.</p>
+    <br>
+    <center><div class="start-button" onclick="startMegaPong()"><p>START</p></div></center>
   </div>
   <div id="toggle-grayscale2">
     <div onclick="toggleGrayscale()">
