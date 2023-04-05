@@ -1,7 +1,16 @@
-import {getValueFromURL, GameRoom} from '../lib/scripts/gameutils.js';
+import {selfId, getValueFromURL, GameRoom} from '../lib/scripts/gameutils.js';
 import {Vector2, Transform2D, BoxCollider2D, Rect2D} from '../lib/scripts/simplephys.js';
 
+var isAdmin = false;
+var offlineMode = getValueFromURL('offlineMode');
 const gameRoom = new GameRoom();
+var sendPlayerPos;
+var sendBallPos;
+var sendStart;
+var sendGameTimer;
+var sendShake;
+var sendVictory;
+var sendMainMenu;
 const rainbowColors = [
   0xff0000,
   0xffa500,
@@ -97,10 +106,14 @@ class GamePlayer {
   }
   
   moveToRelative(x, y = null) {
+    this.position.x -= 0.5;
+    this.position.y -= 0.5;
     this.position.rotateSelf((2 * Math.PI) - this.transform.rotation);
     this.position.x = x;
     if (y != null) this.position.y = y;
     this.position.rotateSelf(this.transform.rotation);
+    this.position.x += 0.5;
+    this.position.y += 0.5;
   }
 }
 
@@ -121,6 +134,7 @@ const app = new PIXI.Application({
 var nextChildIndex = 0;
 var stageChildren = {};
 app.view.style.position = 'relative';
+app.stage.sortableChildren = true;
 gameView.appendChild(app.view);
 
 function stageAddChild(child) {
@@ -144,6 +158,8 @@ function clearStage() {
   stageChildren = {};
 }
 
+var globalRotation = 0;
+
 class VisualPlayer {
   id;
   position;
@@ -160,7 +176,10 @@ class VisualPlayer {
     this.player = player;
     this.transform = player.transform;
     this.collider = player.collider;
-    this.position = this.transform.position;
+    this.position = new Vector2(this.transform.position.x - 0.5, this.transform.position.y - 0.5);
+    this.position.rotateSelf(globalRotation);
+    this.position.x += 0.5;
+    this.position.y += 0.5;
     this.goalSprite = PIXI.Sprite.from(PIXI.Texture.WHITE);
     this.goalSprite.anchor.set(0.5);
     this.goalSprite.tint = 0x444444;
@@ -191,16 +210,22 @@ class VisualPlayer {
   }
   
   update() {
+    this.position = new Vector2(this.transform.position.x - 0.5, this.transform.position.y - 0.5);
+    this.position.rotateSelf(globalRotation);
+    this.position.x += 0.5;
+    this.position.y += 0.5;
     this.goalSprite.height = app.screen.height / 200;
     this.goalSprite.width = app.screen.width * 1000;
     this.goalSprite.x = (this.position.x) * app.screen.width;
     this.goalSprite.y = (this.position.y) * app.screen.height;
-    this.goalSprite.rotation = this.transform.rotation;
+    var rot = this.transform.rotation + globalRotation;
+    if (rot > (2 * Math.PI)) rot -= (2 * Math.PI);
+    this.goalSprite.rotation = rot;
     this.sprite.height = app.screen.height;
     this.sprite.width = app.screen.width * this.collider.bounds.width;    
     this.sprite.x = (this.position.x) * app.screen.width;
     this.sprite.y = (this.position.y) * app.screen.height;
-    this.sprite.rotation = this.transform.rotation;
+    this.sprite.rotation = rot;
     /*
     const relPos = this.position.rotate((Math.PI * 2) - this.transform.rotation);
     const healthSpritePos = new Vector2(relPos.x, relPos.y + 0.03).rotate(this.transform.rotation);
@@ -213,16 +238,32 @@ class VisualPlayer {
   }
 }
 
-var playersInfo = {
-  'host': new PlayerInfo('host', 'You', PlayerControl.pointer),
-};
-var localPlayers = ['host'];
-var alivePlayers = {
-  'host': new GamePlayer('host', new Transform2D(new Vector2(0.5, 0.95))),
-};
-var visualPlayers = {
-  'host': new VisualPlayer(alivePlayers['host']),
-};
+var playersInfo = {};
+playersInfo[selfId] = new PlayerInfo(selfId, 'You', PlayerControl.pointer);
+var localPlayers = {};
+localPlayers[selfId] = '';
+var alivePlayers = {};
+alivePlayers[selfId] = new GamePlayer(selfId, new Transform2D(new Vector2(0.5, 0.95)));
+var visualPlayers = {};
+visualPlayers[selfId] = new VisualPlayer(alivePlayers[selfId]);
+
+function formattedSendPlayerPos() {
+  const playerPos = {};
+  const playerPosKeys = Object.keys(alivePlayers);
+  for (let i = 0; i != playerPosKeys.length; i++) {
+    const key = playerPosKeys[i];
+    const info = playersInfo[key];
+    const alivePlayer = alivePlayers[key];
+    const player = {
+      position: alivePlayer.position,
+      rotation: alivePlayer.transform.rotation,
+      name: info.name,
+      control: info. control,
+    };
+    playerPos[key] = player;
+  }
+  sendPlayerPos(playerPos);
+}
 
 function rotatePlayers() {
   var players = Object.values(alivePlayers);
@@ -268,30 +309,53 @@ function addPlayer(id) {
 }
 
 var botIndex = 0;
-function createBotPlayer() {
-  const id = localPlayers[0].id + `_${botIndex}`;
-  botIndex++;
-  playersInfo[id] = new PlayerInfo(id, 'Botty', PlayerControl.bot);
-  localPlayers.push(id);
+function createPlayer(id, name, playerControl = PlayerControl.pointer) {
+  playersInfo[id] = new PlayerInfo(id, name, playerControl);
   addPlayer(id);
 }
-function removeBotPlayer() {
-  if (localPlayers.length == 2) return;
-  const id = localPlayers.pop();
-  delete playersInfo[id];
+function createBotPlayer() {
+  const id = selfId + `_${botIndex}`;
+  botIndex++;
+  createPlayer(id, 'Botty', PlayerControl.bot);
+  localPlayers[id] = '';
+}
+function removePlayer(id) {
   delete alivePlayers[id];
-  var visualPlayer = visualPlayers[id];
+  const visualPlayer = visualPlayers[id];
   delete visualPlayers[id];
   visualPlayer.removeFromStage();
   rotatePlayers();
 }
+function removeBotPlayer() {
+  if (Object.keys(alivePlayers).length == 2) return;
+  const localPlayerKeys = Object.keys(localPlayers);
+  if (localPlayerKeys.length == 1) return;
+  const id = localPlayerKeys.pop();
+  delete localPlayers[id];
+  delete playersInfo[id];
+  botIndex--;
+  removePlayer(id);
+}
+function replacePlayer(id, newId, playerControl = PlayerControl.pointer) {
+  const playerInfo = playersInfo[id];
+  delete playersInfo[id];
+  playerInfo.id = newId;;
+  playerInfo.control = playerControl;
+  playersInfo[newId] = playerInfo;
+  const alivePlayer = alivePlayers[id];
+  delete alivePlayers[id];
+  alivePlayer.id = newId;;
+  alivePlayers[newId] = alivePlayer;
+  const visualPlayer = visualPlayers[id];
+  delete visualPlayers[id];
+  visualPlayer.id = newId;
+  visualPlayers[newId] = visualPlayer;
+}
 
 createBotPlayer();
 createBotPlayer();
 createBotPlayer();
 createBotPlayer();
-
-var isAdmin = true;
 
 function updateVisualPlayers() {
   var vplays = Object.values(visualPlayers);
@@ -338,19 +402,6 @@ function randAngle() {
   return Math.sin((Math.PI / 2) * (1 + (Math.random() / 2)));
 }
 
-var players = [
-  {
-    id: 'test',
-    type: 'local',
-    control: 'pointer',
-  },
-  {
-    id: 'test',
-    type: 'local',
-    control: 'bot',
-  },
-];
-
 var pointerX = 0;
 var ballPos = new Vector2(
   0.5,
@@ -359,8 +410,10 @@ var ballPos = new Vector2(
 
 function moveBotPlayer(dt, id) {
   const player = alivePlayers[id];
-  const playerPosRel = player.position.rotate((2 * Math.PI) - player.transform.rotation);
-  const ballPosRel = ballPos.rotate((2 * Math.PI) - player.transform.rotation);
+  const playerPosRel = new Vector2(player.position.x - 0.5, player.position.y - 0.5);
+  playerPosRel.rotateSelf((2 * Math.PI) - player.transform.rotation);
+  const ballPosRel = new Vector2(ballPos.x - 0.5, ballPos.y - 0.5);
+  ballPosRel.rotateSelf((2 * Math.PI) - player.transform.rotation);
   if (playerPosRel.x < ballPosRel.x - 0.005) {
     player.moveToRelative(playerPosRel.x + dt * computerPlayerSpeed);
     return;
@@ -373,8 +426,10 @@ function moveBotPlayer(dt, id) {
 }
 
 function movePlayers(dt) {
-  for (let i = 0; i != localPlayers.length; i++) {
-    const index = localPlayers[i];
+  if (!isAdmin) return;
+  const localPlayerKeys = Object.keys(localPlayers);
+  for (let i = 0; i != localPlayerKeys.length; i++) {
+    const index = localPlayerKeys[i];
     if (alivePlayers[index] == null) continue;
     const player = playersInfo[index];
     if (player.control == PlayerControl.bot) {
@@ -382,21 +437,40 @@ function movePlayers(dt) {
       continue;
     }
     if (player.control == PlayerControl.pointer) {
-      alivePlayers[index].moveToRelative(pointerX);
+      alivePlayers[index].moveToRelative(pointerX - 0.5);
       continue;
     }
   }
 }
 
+var victoryIsPlaying = true;
+var victoryUpdate;
+
+function victoryScreenToMainMenu() {
+  clearStage();
+  victoryIsPlaying = false;
+  app.ticker.remove(victoryUpdate);
+  alivePlayers = {};
+  alivePlayers[selfId] = new GamePlayer(selfId, new Transform2D(new Vector2(0.5, 0.95)));
+  const playersInfoKeys = Object.keys(playersInfo);
+  for (let i = 0; i != playersInfoKeys.length; i++) {
+    const key = playersInfoKeys[i];
+    const player = new GamePlayer(key, new Transform2D(new Vector2(0.5, 0.95)));
+    alivePlayers[key] = player;
+    visualPlayers[key] = new VisualPlayer(player);
+  }
+  rotatePlayers();
+  addVisualPlayers();
+  mainMenu();
+}
+
 function victoryScreen(text) {
-  var isPlaying = true;
-  
+  victoryIsPlaying = true;
   const victoryText = new PIXI.Text(text, {
     fontFamily: 'Press Start 2P',
     fill: rainbowColors[randInt(0, 6)],
     align: 'center',
   });
-  
   var colorSwitchTimer = 0;
   var victoryTimer = 0;
   function showVictory(dt) {
@@ -404,17 +478,19 @@ function victoryScreen(text) {
     victoryText.x = (app.screen.width / 2) - (victoryText.width / 2);
     victoryText.y = (app.screen.height / 2) - (victoryText.height / 2);
     colorSwitchTimer += dt;
+    victoryTimer += dt;
     if (colorSwitchTimer > 100) {
       victoryText.style.fill = rainbowColors[randInt(0, 6)];
       colorSwitchTimer = 0;
     }
+    if (victoryTimer > 3000) victoryScreenToMainMenu();
   }
   
   var dt = 0;
   var updating = false;
-  function update() {
-    if (!isPlaying) {
-      app.ticker.remove(update);
+  victoryUpdate = () => {
+    if (!victoryIsPlaying) {
+      app.ticker.remove(victoryUpdate);
       return;
     }
     dt += app.ticker.deltaMS;
@@ -425,16 +501,45 @@ function victoryScreen(text) {
     dt = 0;
     updating = false;
   }
-  app.ticker.add(update);
+  app.ticker.add(victoryUpdate);
   
   stageAddChild(victoryText);
 }
 
+var start2pIsPlaying;
+var start2pUpdate;
+function changeStart2pToVictoryScreen(text) {
+  if (!offlineMode) if (isAdmin) sendVictory({ text: text });
+  clearStage();
+  start2pIsPlaying = false;
+  app.ticker.remove(start2pUpdate);
+  victoryScreen(text);
+}
+
+var gameTimer = 0;
+var shakeTimer = 0;
+var shakeProgress = 0;
+var shakeDirection = new Vector2();
+var shakeTimerMax = 300;
+
+function doAdminThingies(dt) {
+  movePlayers(dt);
+  formattedSendPlayerPos(alivePlayers);
+  sendBallPos({ position: ballPos });
+  sendGameTimer(gameTimer);
+  sendShake({
+    shakeTimer: shakeTimer,
+    shakeProgress: shakeProgress,
+    shakeDirection: shakeDirection,
+    shakeTimerMax: shakeTimerMax,
+  });
+}
+
 function start2p() {
+  start2pIsPlaying = true;
   addVisualPlayers();
   ballPos.x = 0.3 + (Math.random() * 0.4);
   ballPos.y = 0.5;
-  var isPlaying = true;
   const ball = PIXI.Sprite.from(PIXI.Texture.WHITE);
   ball.anchor.set(0.5);
   var ballTransform = new Transform2D(ballPos);
@@ -444,14 +549,14 @@ function start2p() {
   );
   var ballSpeed = new Vector2();
   var gameReset = true;
-  var gameTimer = 0;
+  gameTimer = 0;
   var colorSwitchTimer = 0;
   var colorIndex = 0;
   var lastHurtPlayerVisual;
-  var shakeTimer = 0;
-  var shakeProgress = 0;
-  var shakeDirection = new Vector2();
-  var shakeTimerMax = 300;
+  shakeTimer = 0;
+  shakeProgress = 0;
+  shakeDirection = new Vector2();
+  shakeTimerMax = 300;
 
   const gameTimerText = new PIXI.Text('5', {
     fontFamily: 'Press Start 2P',
@@ -518,24 +623,35 @@ function start2p() {
     delete visualPlayers[playerID];
     rotatePlayers();
     if (Object.keys(alivePlayers).length == 1) {
-      clearStage();
-      stageAddChild(gameTimerText);
-      isPlaying = false;
-      victoryScreen(`${playersInfo[Object.values(alivePlayers)[0].id].name} wins!`);
+      changeStart2pToVictoryScreen(`${playersInfo[Object.values(alivePlayers)[0].id].name} wins!`);
       return;
     }
-    if (playerID == localPlayers[0]) {
-      clearStage();
-      stageAddChild(gameTimerText);
-      isPlaying = false;
-      victoryScreen(`Bots win!`);
+    var botsWin;
+    const alivePlayerKeys = Object.keys(alivePlayers);
+    console.log(alivePlayerKeys);
+    console.log(playersInfo);
+    if (alivePlayerKeys.length < Object.keys(localPlayers).length) {
+      botsWin = true;
+      for (let i = 0; i != alivePlayerKeys.length; i++) {
+        const key = alivePlayerKeys[i];
+        if (playersInfo[key].control == PlayerControl.bot) continue;
+        botsWin = false;
+        break;
+      }
+    } else {
+      botsWin = false;
+    }
+    if (botsWin) {
+      changeStart2pToVictoryScreen(`Bots win!`);
       return;
     }
   }
 
   function checkPlayerCollision(dt) {
-    for (let i = 0; i != localPlayers.length; i++) {
-      const index = localPlayers[i];
+    if (!isAdmin) return;
+    const alivePlayerKeys = Object.keys(alivePlayers);
+    for (let i = 0; i != alivePlayerKeys.length; i++) {
+      const index = alivePlayerKeys[i];
       var player = alivePlayers[index];
       if (player == null) continue;
       if (player.checkGoalCollision(ballCol)) {
@@ -569,29 +685,35 @@ function start2p() {
     }
   }
 
-  function moveBall(dt) {
+  function timerText(dt) {
     gameTimer += dt;
-    if (gameTimer < 4000) {
-      var time = Math.floor(gameTimer / 1000);
-      if (time == 3) {
-        gameTimerText.text = 'GO!';
-        gameTimerText.style.fontSize = app.screen.width / 10;
-        gameTimerText.x = (app.screen.width / 2) - (gameTimerText.width / 2) + (app.screen.width * ((Math.random() - 0.5) / 100));
-        gameTimerText.y = (app.screen.height / 2) - (gameTimerText.height / 2) + (app.screen.height * ((Math.random() - 0.5) / 100));
-        colorSwitchTimer += dt;
-        if (colorSwitchTimer > 50) {
-          gameTimerText.style.fill = rainbowColors[colorIndex];
-          colorSwitchTimer = 0;
-          colorIndex++;
-          if (colorIndex == 7) colorIndex = 0;
-        }
-        return;
-      }
-      gameTimerText.text = 3 - Math.floor(gameTimer / 1000);
-      gameTimerText.x = (app.screen.width / 2) - (gameTimerText.width / 2);
-      gameTimerText.y = (app.screen.height / 2) - (gameTimerText.height / 2);
+    if (gameTimer > 4000) {
+      gameTimerText.style.fill = 0xff0000;
+      gameTimerText.text = '';
       return;
     }
+    var time = Math.floor(gameTimer / 1000);
+    if (time == 3) {
+      gameTimerText.text = 'GO!';
+      gameTimerText.style.fontSize = app.screen.width / 10;
+      gameTimerText.x = (app.screen.width / 2) - (gameTimerText.width / 2) + (app.screen.width * ((Math.random() - 0.5) / 100));
+      gameTimerText.y = (app.screen.height / 2) - (gameTimerText.height / 2) + (app.screen.height * ((Math.random() - 0.5) / 100));
+      colorSwitchTimer += dt;
+      if (colorSwitchTimer > 50) {
+        gameTimerText.style.fill = rainbowColors[colorIndex];
+        colorSwitchTimer = 0;
+        colorIndex++;
+        if (colorIndex == 7) colorIndex = 0;
+      }
+      return;
+    }
+    gameTimerText.text = 3 - Math.floor(gameTimer / 1000);
+    gameTimerText.x = (app.screen.width / 2) - (gameTimerText.width / 2);
+    gameTimerText.y = (app.screen.height / 2) - (gameTimerText.height / 2);
+  }
+
+  function moveBall(dt) {
+    if (gameTimer < 4000) return;
     if (gameReset) {
       if (Math.round(Math.random()) == 0) ballSpeed.x = 0.15;
       else ballSpeed.x = -0.15;
@@ -600,7 +722,6 @@ function start2p() {
       gameReset = false;
       return;
     }
-    gameTimerText.text = '';
     ballPos.x += ballSpeed.x * (dt / 1000);
     ballPos.y += ballSpeed.y * (dt / 1000);
     // Collision stuff \/\/\/ (move to a separate function later)
@@ -641,9 +762,9 @@ function start2p() {
 
   var dt = 0;
   var updating = false;
-  function update() {
-    if (!isPlaying) {
-      app.ticker.remove(update);
+  start2pUpdate = () => {
+    if (!start2pIsPlaying) {
+      app.ticker.remove(start2pUpdate);
       return;
     }
     dt += app.ticker.deltaMS;
@@ -660,7 +781,7 @@ function start2p() {
     updating = false;
     dt = 0;
   }
-  app.ticker.add(update);
+  app.ticker.add(start2pUpdate);
   onmousemove = (e) => {
     pointerX = (e.clientX - ((document.body.clientWidth - app.screen.width) / 2)) / app.screen.width;
   }
@@ -669,74 +790,95 @@ function start2p() {
   stageAddChild(gameTimerText);
   var lastUpdateMs = new Date().getTime();
   function fixedUpdate() {
-    if (!isPlaying) return;
+    if (!start2pIsPlaying) return;
     var curMs = new Date().getTime();
     var dt = curMs - lastUpdateMs;
     lastUpdateMs = curMs;
     gameTimerText.style.fontSize = app.screen.width / 22;
+    timerText(dt);
     moveBall(dt);
-    movePlayers(dt);
+    if (offlineMode) movePlayers(dt);
+    else {
+      if (isAdmin) {
+        doAdminThingies(dt);
+      } else {
+        if (alivePlayers[selfId] != null) {
+          alivePlayers[selfId].moveToRelative(pointerX - 0.5);
+          sendPlayerPos(pointerX);
+        }
+      }
+    }
     setTimeout(fixedUpdate, maxFixedUpdateRate);
   }
   fixedUpdate();
 }
 
-var playerCount;
+var mainMenuIsPlaying;
+var mainMenuUpdate;
+function onStart() {
+  onclick = null;
+  mainMenuIsPlaying = false;
+  app.ticker.remove(mainMenuUpdate);
+  clearStage();
+  addVisualPlayers();
+  start2p(true);
+}
 
 function mainMenu() {
-  var isPlaying = true;
-  
-  function onStart() {
-    onclick = null;
-    isPlaying = false;
-    app.ticker.remove(update);
-    clearStage();
-    start2p(true);
-  }
-  
+  mainMenuIsPlaying = true;
   var mouseX = 0;
   var mouseY = 0;
   var pointedAt;
   
   const playersTitleText = new PIXI.Text('↓ PLAYERS ↓', {
     fontFamily: 'Press Start 2P',
+    fill: 0xff0000,
+    align: 'center',
+  });
+  playersTitleText.zIndex = 1000;
+  const playerListText = new PIXI.Text('\nYour game is in\noffline mode.\nThis could be\nbecause the game\nhost left.\n\nTo play it with\nyour friends,\nvisit\ngleammerray.github.io/games', {
+    fontFamily: 'Press Start 2P',
     fill: 0xffffff,
     align: 'center',
   });
-  const playerListText = new PIXI.Text('This game is\ncurrently in\nsingle-player\nmode (against\ncomputer).\n\nVisit us in a\nweek or two\nto play it\ntogether!', {
-    fontFamily: 'Press Start 2P',
-    fill: 0xffffff,
-    align: 'left',
-  });
+  playerListText.zIndex = 1000;
   const startButtonText = new PIXI.Text('>>> START <<<', {
     fontFamily: 'Press Start 2P',
     fill: 0xffffff,
     align: 'left',
   });
+  startButtonText.zIndex = 1000;
   const modeArrowBG = PIXI.Sprite.from(PIXI.Texture.WHITE);
   modeArrowBG.tint = 0xFF0000;
+  modeArrowBG.zIndex = 1000;
   const modeArrowLeft = new PIXI.Text('-', {
     fontFamily: 'Press Start 2P',
     fill: 0xffffff,
     align: 'left',
   });
+  modeArrowLeft.zIndex = 1000;
   const modeArrowRight = new PIXI.Text('+', {
     fontFamily: 'Press Start 2P',
     fill: 0xffffff,
     align: 'left',
   });
+  modeArrowRight.zIndex = 1000;
   const modeTextBG = PIXI.Sprite.from(PIXI.Texture.WHITE);
-  const modeText = new PIXI.Text('1 player(s), 4 bot(s)', {
+  modeTextBG.zIndex = 1000;
+  const modeText = new PIXI.Text('', {
     fontFamily: 'Press Start 2P',
     fill: 0x000000,
     align: 'center',
   });
+  if (isAdmin) modeText.text = '1 player(s), 4 bot(s)';
+  else modeText.text = 'Waiting for admin to start';
+  modeText.zIndex = 1000;
   const startButton = PIXI.Sprite.from(PIXI.Texture.WHITE);
   startButton.tint = 0xFF0000;
   
-  function update() {
-    if (!isPlaying) {
-      app.ticker.remove(update);
+  mainMenuUpdate = () => {
+    if (!mainMenuIsPlaying) {
+      app.ticker.remove(mainMenuUpdate);
       return;
     }
     resizeGameView();
@@ -744,23 +886,22 @@ function mainMenu() {
     playersTitleText.style.fontSize = app.screen.width / 15;
     playersTitleText.x = app.screen.width / 7;
     playersTitleText.y = app.screen.height / 20;
-    playerListText.style.fontSize = app.screen.width / 30;
-    playerListText.x = app.screen.width / 4;
+    if (!offlineMode) {
+      var newText = '';
+      const alivePlayerKeys = Object.keys(alivePlayers);
+      for (let i = 0; i != alivePlayerKeys.length; i++) {
+        const key = alivePlayerKeys[i];
+        const playerInfo = playersInfo[key];
+        if (playerInfo == null) continue;
+        if (playerInfo.control == PlayerControl.bot) continue;
+        console.log(playerInfo.name);
+        newText += `${playerInfo.name}\n`;
+      }
+      playerListText.text = newText;
+    }
+    playerListText.style.fontSize = app.screen.width / 35;
+    playerListText.x = (app.screen.width - playerListText.width) / 2;
     playerListText.y = app.screen.height / 6;
-    modeArrowBG.width = app.screen.width / 1.04;
-    modeArrowBG.height = app.screen.width / 11;
-    modeArrowBG.x = app.screen.width / 70;
-    modeArrowBG.y = app.screen.height / 1.45;
-    modeArrowLeft.style.fontSize = app.screen.width / 20;
-    modeArrowLeft.x = app.screen.width / 27;
-    modeArrowLeft.y = app.screen.height / 1.4;
-    modeArrowRight.style.fontSize = app.screen.width / 20;
-    modeArrowRight.x = app.screen.width / 1.11;
-    modeArrowRight.y = app.screen.height / 1.4;
-    modeTextBG.width = app.screen.width / 1.31;
-    modeTextBG.height = app.screen.width / 11;
-    modeTextBG.x = app.screen.width / 9;
-    modeTextBG.y = app.screen.height / 1.45;
     var realPlayerCount = 0;
     var botPlayerCount = 0;
     const playerInfoValues = Object.values(playersInfo);
@@ -771,26 +912,64 @@ function mainMenu() {
       }
       botPlayerCount++;
     }
-    modeText.text = `${realPlayerCount} player(s), ${botPlayerCount} bot(s)`;
-    modeText.style.fontSize = app.screen.width / 32;
+    modeTextBG.width = app.screen.width / 1.31;
+    modeTextBG.height = app.screen.width / 11;
+    modeTextBG.x = app.screen.width / 9;
+    modeTextBG.y = app.screen.height / 1.45;
     modeText.x = app.screen.width / 8;
     modeText.y = app.screen.height / 1.39;
-    startButtonText.style.fontSize = app.screen.width / 20;
-    startButtonText.x = app.screen.width / 5.9;
-    startButtonText.y = app.screen.height / 1.2;
-    startButton.width = app.screen.width / 3.5;
-    startButton.height = app.screen.height / 9;
-    startButton.x = app.screen.width / 2.85;
-    startButton.y = app.screen.height / 1.25;
+    if (isAdmin) {
+      modeArrowBG.width = app.screen.width / 1.04;
+      modeArrowBG.height = app.screen.width / 11;
+      modeArrowBG.x = app.screen.width / 70;
+      modeArrowBG.y = app.screen.height / 1.45;
+      modeArrowLeft.style.fontSize = app.screen.width / 20;
+      modeArrowLeft.x = app.screen.width / 27;
+      modeArrowLeft.y = app.screen.height / 1.4;
+      modeArrowRight.style.fontSize = app.screen.width / 20;
+      modeArrowRight.x = app.screen.width / 1.11;
+      modeArrowRight.y = app.screen.height / 1.4;
+      modeText.style.fontSize = app.screen.width / 32;
+      modeText.text = `${realPlayerCount} player(s), ${botPlayerCount} bot(s)`;
+      startButton.width = app.screen.width / 3.5;
+      startButton.height = app.screen.height / 9;
+      startButton.x = app.screen.width / 2.85;
+      startButton.y = app.screen.height / 1.25;
+      startButtonText.style.fontSize = app.screen.width / 20;
+      startButtonText.x = app.screen.width / 5.9;
+      startButtonText.y = app.screen.height / 1.2;
+      modeArrowBG.visible = true;
+      modeArrowLeft.visible = true;
+      modeArrowRight.visible = true;
+      startButton.visible = true;
+      startButtonText.visible = true;
+    } else {
+      modeArrowBG.visible = false;
+      modeArrowLeft.visible = false;
+      modeArrowRight.visible = false;
+      modeText.style.fontSize = app.screen.width / 40;
+      startButton.visible = false;
+      startButtonText.visible = false;
+    }
   }
-  app.ticker.add(update);
+  app.ticker.add(mainMenuUpdate);
   var lastUpdateMs = new Date().getTime();
   function fixedUpdate() {
-    if (!isPlaying) return;
+    if (!mainMenuIsPlaying) return;
     var curMs = new Date().getTime();
     var dt = curMs - lastUpdateMs;
     lastUpdateMs = curMs;
-    movePlayers(dt);
+    if (offlineMode) movePlayers(dt);
+    else {
+      if (isAdmin) {
+        doAdminThingies(dt);
+      } else {
+        if (alivePlayers[selfId] != null) {
+          alivePlayers[selfId].moveToRelative(pointerX - 0.5);
+          sendPlayerPos(pointerX);
+        }
+      }
+    }
     setTimeout(fixedUpdate, maxFixedUpdateRate);
   }
   fixedUpdate();
@@ -798,6 +977,7 @@ function mainMenu() {
     mouseX = (e.clientX - ((document.body.clientWidth - app.screen.width) / 2));
     pointerX = mouseX / app.screen.width;
     mouseY = e.clientY;
+    if (!isAdmin) return;
     document.body.style.cursor = "auto";
     pointedAt = null;
     // Start button
@@ -840,6 +1020,7 @@ function mainMenu() {
     switch (pointedAt) {
       case 'startButton':
         onStart();
+        if (!offlineMode) if (isAdmin) sendStart(true);
         break;
       case 'modeArrowLeft':
         removeBotPlayer();
@@ -869,6 +1050,100 @@ function mainMenu() {
 }
 
 function onConnected() {
+  if (offlineMode) isAdmin = true;
+  else {
+    playersInfo[selfId].name = gameRoom.playerInfo[selfId].name
+    isAdmin = gameRoom.isAdmin;
+    [sendPlayerPos, getPlayerPos] = gameRoom.makeAction('playerPos');
+    var getBallPos;
+    [sendBallPos, getBallPos] = gameRoom.makeAction('ballPos');
+    var getStart;
+    [sendStart, getStart] = gameRoom.makeAction('start');
+    var getGameTimer;
+    [sendGameTimer, getGameTimer] = gameRoom.makeAction('gameTimer');
+    var getShake;
+    [sendShake, getShake] = gameRoom.makeAction('shake');
+    var getVictory;
+    [sendVictory, getVictory] = gameRoom.makeAction('victory');
+    gameRoom.onDisconnected(() => window.location.reload());
+    if (isAdmin) {
+      const connectedPlayerIds = Object.keys(gameRoom.connectedPlayerInfo);
+      for (let i = 0; i != connectedPlayerIds.length; i++) {
+        const peerId = connectedPlayerIds[i];
+        if (peerId == selfId) continue;
+        createPlayer(peerId, gameRoom.connectedPlayerInfo[peerId].name);
+      }
+      gameRoom.onPeerJoin((peerId) => {
+        const localPlayerKeys = Object.keys(localPlayers);
+        if (localPlayerKeys.length == 1) {
+          createPlayer(peerId, gameRoom.connectedPlayerInfo[peerId].name);
+        } else {
+          const id = localPlayerKeys.pop();
+          delete localPlayers[id];
+          replacePlayer(id, peerId, PlayerControl.pointer);
+        }
+        playersInfo[peerId].name = gameRoom.playerInfo[peerId].name;
+      });
+      gameRoom.onPeerLeave((peerId) => {
+        const playerInfo = playersInfo[peerId];
+        if (playerInfo != null) {
+          playerInfo.name = 'Botty';
+          playerInfo.control = PlayerControl.bot;
+          localPlayers[peerId] = '';
+        }
+      });
+      getPlayerPos((playerPos, peerId) => {
+        if (typeof playerPos != 'number') return;
+        if (alivePlayers[peerId] == null) return;
+        alivePlayers[peerId].moveToRelative(playerPos - 0.5);
+      });
+    } else {
+      // Client
+      getPlayerPos((playerPos) => {
+        var clientPlayerIds = Object.keys(alivePlayers);
+        const serverPlayerIds = Object.keys(playerPos);
+        for (let i = 0; i != clientPlayerIds.length; i++) {
+          const id = clientPlayerIds[i];
+          if (serverPlayerIds.includes(id)) continue;
+          removePlayer(id);
+        }
+        clientPlayerIds = Object.keys(alivePlayers);
+        var selfIndex = -1;
+        for (let i = 0; i != serverPlayerIds.length; i++) {
+          const id = serverPlayerIds[i];
+          const remotePlayer = playerPos[id];
+          if (!clientPlayerIds.includes(id)) createPlayer(id, remotePlayer.name, remotePlayer.control);
+          if (selfId == id) selfIndex = i;
+          const player = alivePlayers[id];
+          player.position.x = remotePlayer.position.x;
+          player.position.y = remotePlayer.position.y;
+          player.transform.rotation = remotePlayer.rotation;
+        }
+        if (selfIndex == -1) {
+          globalRotation = 0;
+          return;
+        }
+        globalRotation = ((2 * Math.PI) / serverPlayerIds.length) * selfIndex;
+      });
+      getBallPos((remoteBallPos) => {
+        ballPos.x = remoteBallPos.position.x - 0.5;
+        ballPos.y = remoteBallPos.position.y - 0.5;
+        ballPos.rotateSelf(globalRotation);
+        ballPos.x += 0.5;
+        ballPos.y += 0.5;
+      })
+      getStart(() => onStart());
+      getGameTimer((timer) => gameTimer = timer);
+      getShake((shake) => {
+        shakeTimer = shake.shakeTimer;
+        shakeProgress = shake.shakeProgress;
+        shakeDirection = new Vector2(shake.shakeDirection.x, shake.shakeDirection.y);
+        shakeTimerMax = shake.shakeTimerMax;
+      });
+      getVictory((victory) => changeStart2pToVictoryScreen(victory.text));
+    }
+  }
+  var getPlayerPos;
   WebFont.load({
     google: {
       families: ['Press Start 2P']
@@ -878,6 +1153,18 @@ function onConnected() {
     }
   });
 }
+gameRoom.onConnected(onConnected);
 
-gameRoom.onConnected(() => gameRoom.makeAction('test'));
-onConnected();
+switch (offlineMode) {
+  case undefined:
+    offlineMode = false;
+    window.history.pushState('page2', 'GleammerRay - MegaPONG!', '/games/megapong.html?offlineMode=true');
+    break;
+  case 'true':
+    offlineMode = true;
+    onConnected();
+    break;
+  case 'false':
+    offlineMode = false;
+    break;
+}
