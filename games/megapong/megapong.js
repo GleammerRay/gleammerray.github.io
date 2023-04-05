@@ -516,6 +516,7 @@ function changeStart2pToVictoryScreen(text) {
   victoryScreen(text);
 }
 
+var ballSpeed = new Vector2();
 var gameTimer = 0;
 var shakeTimer = 0;
 var shakeProgress = 0;
@@ -525,7 +526,7 @@ var shakeTimerMax = 300;
 function doAdminThingies(dt) {
   movePlayers(dt);
   formattedSendPlayerPos(alivePlayers);
-  sendBallPos({ position: ballPos });
+  sendBallPos({ position: ballPos, speed: ballSpeed });
   sendGameTimer(gameTimer);
   sendShake({
     shakeTimer: shakeTimer,
@@ -547,7 +548,7 @@ function start2p() {
     ballTransform,
     new Rect2D(-0.0125, -0.0125, 0.025, 0.025),
   );
-  var ballSpeed = new Vector2();
+  ballSpeed = new Vector2();
   var gameReset = true;
   gameTimer = 0;
   var colorSwitchTimer = 0;
@@ -628,8 +629,6 @@ function start2p() {
     }
     var botsWin;
     const alivePlayerKeys = Object.keys(alivePlayers);
-    console.log(alivePlayerKeys);
-    console.log(playersInfo);
     if (alivePlayerKeys.length < Object.keys(localPlayers).length) {
       botsWin = true;
       for (let i = 0; i != alivePlayerKeys.length; i++) {
@@ -894,7 +893,6 @@ function mainMenu() {
         const playerInfo = playersInfo[key];
         if (playerInfo == null) continue;
         if (playerInfo.control == PlayerControl.bot) continue;
-        console.log(playerInfo.name);
         newText += `${playerInfo.name}\n`;
       }
       playerListText.text = newText;
@@ -1113,11 +1111,14 @@ function onConnected() {
           const id = serverPlayerIds[i];
           const remotePlayer = playerPos[id];
           if (!clientPlayerIds.includes(id)) createPlayer(id, remotePlayer.name, remotePlayer.control);
-          if (selfId == id) selfIndex = i;
           const player = alivePlayers[id];
           player.position.x = remotePlayer.position.x;
           player.position.y = remotePlayer.position.y;
           player.transform.rotation = remotePlayer.rotation;
+          if (selfId == id) {
+            player.moveToRelative(pointerX - 0.5);
+            selfIndex = i;
+          }
         }
         if (selfIndex == -1) {
           globalRotation = 0;
@@ -1131,7 +1132,10 @@ function onConnected() {
         ballPos.rotateSelf(globalRotation);
         ballPos.x += 0.5;
         ballPos.y += 0.5;
-      })
+        ballSpeed.x = remoteBallPos.speed.x;
+        ballSpeed.y = remoteBallPos.speed.y;
+        ballSpeed.rotateSelf(globalRotation);
+      });
       getStart(() => onStart());
       getGameTimer((timer) => gameTimer = timer);
       getShake((shake) => {
