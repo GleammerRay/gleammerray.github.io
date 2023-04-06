@@ -125,6 +125,34 @@ GleammerRay - Games & Secure Chat
   #playernameinput:focus {
     outline: 0.5vw solid red;
   }
+
+  #active-games-title {
+    color: white;
+    background-color: red;
+    font-size: 1.5vw;
+    overflow: hidden;
+    text-shadow: -3px 3px 0px black;
+  }
+
+  #active-games-messages {
+    overflow-x: hidden;
+    background-color: #444444;
+    color: white;
+    font-size: 2vw;
+    max-height: 25vw;
+    overflow-y: auto;
+    text-shadow: -3px 3px 0px black;
+  }
+
+  #active-games-messages p {
+    margin-left: 15;
+    white-space: initial;
+    word-wrap: break-word;
+  }
+
+  #active-games-messages a {
+    color: greenyellow;
+  }
   
   #game-console-title {
     color: white;
@@ -189,10 +217,11 @@ GleammerRay - Games & Secure Chat
     color: white;
     font-size: 1.5vw;
     word-wrap: break-word;
+    color: #C8C8C8;
   }
 
   #submit-issue a {
-    color: white;
+    color: #C8C8C8;
   }
   
   #game-list-title {
@@ -247,10 +276,6 @@ GleammerRay - Games & Secure Chat
     width: 16.7vw;
     height: 5.6vw;
   }
-  
-  .start-button:active p {
-  
-  }
 </style>
 <body>
   <div class="section scroll-wrapper" id="page-title">
@@ -281,6 +306,8 @@ GleammerRay - Games & Secure Chat
                oninput    = "this.onchange();"></input>
   </p></center></div>
   <div id="playerlist" class="playerlist"><center><p>NOT CONNECTED.</p></center></div>
+  <div id="active-games-title"><center><p>ACTIVE GAMES</p></center></div>
+  <div id="active-games-messages"><p>No active games - zZz</p></div>
   <div id="game-console-title"><center><p>SECURE GAME CONSOLE</p></center></div>
   <div id="game-console-messages"><p class="consolemsg">No messages. :(</p></div>
   <input type="message" onkeypress="gameConsoleMessageOnKeyPress(event)" id="game-console-message-input" maxlength="100" placeholder="Enter your message..."></input>
@@ -396,6 +423,8 @@ GleammerRay - Games & Secure Chat
   const config = {appId: 'https://gleammerray.github.io/games'};
   
   var playerList = document.getElementById('playerlist').getElementsByTagName('center')[0];
+  var activeGamesElement = document.getElementById('active-games-messages');
+  var activeGames = {};
   var consoleMessagesElement = document.getElementById('game-console-messages');
   var consoleMessages = [];
   
@@ -431,6 +460,7 @@ GleammerRay - Games & Secure Chat
   var lastHostPeerId;
   var lastGameName;
   var awaitingConfirmation = {};
+  var lastGameStatus;
   
   module.leaveGameRoom = () => {
     if (gameRoom == null) return;
@@ -479,7 +509,7 @@ GleammerRay - Games & Secure Chat
     }
     consoleMessagesElement.innerHTML = '';
     for (let i = 0; i != consoleMessages.length; i++) {
-      var msg = consoleMessages[i];
+      const msg = consoleMessages[i];
       if (msg.message == null) {
         var addition = `<p class="consolemsg">${names[msg.peerID]} ${msg.info}.</p>`;
         if (msg.link != null) addition = `<a href="#" id="game-console-message-${i}" onclick="module.onClickLinkConsoleMessage(${i})" style="text-decoration: underlined; text-decoration-color: red; text-decoration-thickness: 0.3vw">${addition}</a>`;
@@ -489,6 +519,20 @@ GleammerRay - Games & Secure Chat
       consoleMessagesElement.innerHTML += `<p>> ${names[msg.peerID]}: ${msg.message}</p>`;
     }
     consoleMessagesElement.scrollTop = consoleMessagesElement.scrollHeight;
+  }
+
+  module.refreshActiveGames = () => {
+    const activeGamesKeys = Object.keys(activeGames);
+    if (activeGamesKeys.length == 0) {
+      activeGamesElement.innerHTML = '<p>No active games - zZz</p>';
+      return;
+    }
+    activeGamesElement.innerHTML = '';
+    for (let i = 0; i != activeGamesKeys.length; i++) {
+      const key = activeGamesKeys[i];
+      const value = activeGames[key];
+      activeGamesElement.innerHTML += `<p> ${names[value.peerId]} - ${key} - <a href="${value.link}" target="_blank">> JOIN <</a></p>`;
+    }
   }
   
   module.sendPlayerName = (name) => {
@@ -522,8 +566,17 @@ GleammerRay - Games & Secure Chat
       const id = ids[i];
       sendGameStatus(status, id);
     }
-    if (status.gameLink == null) consoleMessages.push({ peerID: selfId, info: `stopped ${status.gameName}`, type: 'gameStatus' });
-    else consoleMessages.push({ peerID: selfId, info: `is playing ${status.gameName}`, link: status.gameLink, type: 'gameStatus' });
+    if (status.gameLink == null) {
+      lastGameStatus = null;
+      delete activeGames[status.gameName];
+      consoleMessages.push({ peerID: selfId, info: `stopped ${status.gameName}`, type: 'gameStatus' });
+    }
+    else {
+      lastGameStatus = status;
+      activeGames[status.gameName] = { peerId: selfId, link: status.gameLink };
+      consoleMessages.push({ peerID: selfId, info: `is playing ${status.gameName}`, link: status.gameLink, type: 'gameStatus' });
+    }
+    module.refreshActiveGames();
     module.refreshConsoleMessages();
   }
   
@@ -589,6 +642,7 @@ GleammerRay - Games & Secure Chat
     function onPeerJoin(peerID) {
       sendPlayerName(myName, peerID);
       sendRSAKey(publicKey, peerID);
+      if (lastGameStatus != null) sendGameStatus(lastGameStatus, peerID);
     }
   
     function onPeerLeave(peerID) {
@@ -631,15 +685,21 @@ GleammerRay - Games & Secure Chat
     }
 
     function onGetGameStatus(status, peerID) {
+      if (status == null) return;
       if (typeof status.gameName != 'string') return;
       if (status.gameLink == null) {
+        delete activeGames[status.gameName];
         consoleMessages.push({ peerID: peerID, info: `stopped playing ${status.gameName}`, type: 'gameStatus' });
         module.refreshConsoleMessages();
+        module.refreshActiveGames();
         return;
       }
       if (typeof status.gameLink != 'string') return;
-      consoleMessages.push({ peerID: peerID, info: `is playing ${status.gameName}`, link: `${status.gameLink}&chatSelfId=${selfId}`, type: 'gameStatus' });
+      const gameLink = `${status.gameLink}&chatSelfId=${selfId}`;
+      activeGames[status.gameName] = { peerId: peerID, link: gameLink };
+      consoleMessages.push({ peerID: peerID, info: `is playing ${status.gameName}`, link: gameLink, type: 'gameStatus' });
       module.refreshConsoleMessages();
+      module.refreshActiveGames();
     }
 
     function onGetGameJoin(data, peerID) {
@@ -658,6 +718,7 @@ GleammerRay - Games & Secure Chat
       // TODO: do a malice check (see if already connected)
       sendGameJoin(data, peerID);
     }
+
     
     getPlayerName(onGetPlayerName);
     getConsoleMsg(onGetConsoleMsg);
