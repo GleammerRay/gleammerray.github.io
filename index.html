@@ -144,11 +144,80 @@ GleammerRay
     background-color: gray;
   }
   
+  #games {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    font-size: 6vw;
+  }
+  
+  #games center {
+    width: 100%;
+  }
+  
+  #games p {
+    position: relative;
+    display: inline-block;
+    color: white;
+    margin-bottom: 0;
+    margin-top: 0;
+  }
+  
+  #gamesG {
+    animation: rainbow 3s steps(30, end) infinite;
+  }
+  #gamesA {
+    animation: rainbow 3s steps(30, end) infinite;
+    animation-delay: 0.1s;
+  }
+  #gamesM {
+    animation: rainbow 3s steps(30, end) infinite;
+    animation-delay: 0.2s;
+  }
+  #gamesE {
+    animation: rainbow 3s steps(30, end) infinite;
+    animation-delay: 0.3s;
+  }
+  #gamesS {
+    animation: rainbow 3s steps(30, end) infinite;
+    animation-delay: 0.4s;
+  }
+  
+  @keyframes rainbow {
+    0% {
+      color: red;
+    }
+    14% {
+      color: orange;
+    }
+    29% {
+      color: yellow;
+    }
+    43% {
+      color: #66ff00;
+    }
+    57% {
+      color: #45b6fe;
+    }
+    71% {
+      color: blue;
+    }
+    86% {
+      color: #A865C9;
+    }
+    100% {
+      color: red;
+    }
+  }
+  
   #chat {
     display: flex;
     position: absolute;
     right: 0;
-    width: 100%;
+    width: 50%;
     text-align: center;
     align-items: center;
     background-color: black;
@@ -165,7 +234,6 @@ GleammerRay
   #chat p {
     position: relative;
     display: block;
-    margin-top: 2vw;
     color: white;
     margin-bottom: 0;
     margin-top: 0;
@@ -259,6 +327,12 @@ GleammerRay
     
     #chat img {
       height: 107;
+    }
+  }
+
+  @media screen and (min-width: 2000px) {
+    #games {
+      font-size: 120;
     }
   }
   
@@ -423,6 +497,11 @@ GleammerRay
   </div>
   <div class="section" id="gameschat">
     <a class="overlay" href="./games">
+      <div id="games">
+        <center>
+          <p id="gamesG">G</p><p id="gamesA">A</p><p id="gamesM">M</p><p id="gamesE">E</p><p id="gamesS">S</p>
+        </center>
+      </div>
       <div id="chat">
         <center>
           <p>SECURE<br>CHAT</p>
