@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      function onLoad() {
+        var sPageURL = window.location.search.substring(1);
+        console.log(sPageURL);
+        if (sPageURL.startsWith('steam://')) {
+          document.getElementById('link').href = sPageURL;
+          window.location.href = sPageURL;
+        } else {
+          document.getElementById('link-p').innerHTML = "Unsupported link, only \"steam://\" links are supported.";
+        }
+      }
+      window.addEventListener("load", onLoad);
+    </script>
+  </head>
+  <body>
+    <p id="link-p">Please follow <a id="link" href="">this link</a>.</p>
+<html>
