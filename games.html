@@ -96,7 +96,7 @@ GleammerRay - Games & Secure Chat
     background-color: #444444;
     color: white;
     font-size: 1.5vw;
-    border: yellow 0.8vw;
+    border: #666666 0.8vw;
     border-style: solid;
     width: 60vw;
     margin-left: 20vw;
@@ -132,7 +132,7 @@ GleammerRay - Games & Secure Chat
 
   #active-games-title {
     color: white;
-    background-color: red;
+    background-color: #666666;
     font-size: 1.5vw;
     overflow: hidden;
     text-shadow: -3px 3px 0px black;
@@ -160,7 +160,7 @@ GleammerRay - Games & Secure Chat
   
   #game-console-title {
     color: white;
-    background-color: red;
+    background-color: #666666;
     font-size: 1.5vw;
     overflow: hidden;
     text-shadow: -3px 3px 0px black;
@@ -186,7 +186,7 @@ GleammerRay - Games & Secure Chat
     display: inline-block;
     border: 0.3vw solid yellow;
     font-size: 2vw;
-    width: 95%;
+    width: 85%;
     padding: 0px 0px;
     height: 5vw;
     margin-top: 0vw;
@@ -200,16 +200,38 @@ GleammerRay - Games & Secure Chat
     display: inline-block;
     position: absolute;
     height: 5vw;
-    width: 5%;
+    width: 15%;
     background-color: red;
     color: yellow;
     font-size: 4.5vw;
     overflow: hidden;
   }
-  
-  #game-console-message-send-btn p {
-    margin-top: 0.5vw;
+
+  #game-console-message-send-btn td {
+    width: 100%;
+  }
+
+  #game-console-message-send-btn .grid {
+    display: grid;
+    align-items: center;
+  }
+
+  #game-console-message-send-btn h1 {
+    font-size: 2.4vw;
+    margin-top: 1.2vw;
     cursor: pointer;
+    text-align: center;
+    vertical-align: middle;
+    width: 100%;
+  }
+
+  #game-console-message-send-btn p {
+    font-size: 3.8vw;
+    margin-top: -0.15vw;
+    cursor: pointer;
+    text-align: center;
+    vertical-align: middle;
+    width: 100%;
   }
   
   .consolemsg {
@@ -316,7 +338,7 @@ GleammerRay - Games & Secure Chat
   <div id="game-console-title"><center><p>SECURE GAME CONSOLE</p></center></div>
   <div id="game-console-messages"><p class="consolemsg">No messages. :(</p></div>
   <input type="message" onkeypress="gameConsoleMessageOnKeyPress(event)" id="game-console-message-input" maxlength="100" placeholder="Enter your message..."></input>
-  <div id="game-console-message-send-btn" onclick="onGameConsoleMessageSendBtn()"><center><p>></p></center></div>
+  <table id="game-console-message-send-btn" onclick="onGameConsoleMessageSendBtn()" border="0"><tr><td><h1>SEND</h1></td><td><p>></p></td></tr></table>
   <div id="game-list-title"><center><p>GAME SELECTION</p></center></div>
   <div id="game-list">
     <p class="game-list-game-title">MegaPONG! - Now with multiplayer!<br><br>Experience the classic feel of Pong with 1, 2, 5, 10 or even more players! <br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- by Gleam.</p>
