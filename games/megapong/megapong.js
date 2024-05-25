@@ -471,9 +471,11 @@ function victoryScreen(text) {
   victoryIsPlaying = true;
   const victoryText = new PIXI.Text({
     text: text,
-    fontFamily: 'Press Start 2P',
-    fill: rainbowColors[randInt(0, 6)],
-    align: 'center',
+    style: {
+      fontFamily: 'Press Start 2P',
+      fill: rainbowColors[randInt(0, 6)],
+      align: 'center',
+    },
   });
   var colorSwitchTimer = 0;
   var victoryTimer = 0;
@@ -565,10 +567,12 @@ function start2p() {
 
   const gameTimerText = new PIXI.Text({
     text: '5',
-    fontFamily: 'Press Start 2P',
-    fontSize: 24,
-    fill: 0xff1010,
-    align: 'center',
+    style: {
+      fontFamily: 'Press Start 2P',
+      fontSize: 24,
+      fill: 0xff1010,
+      align: 'center',
+    },
   });
 
   function shake(dt) {
@@ -836,23 +840,29 @@ function mainMenu() {
   
   const playersTitleText = new PIXI.Text({
     text: '↓ PLAYERS ↓',
-    fontFamily: 'Press Start 2P',
-    fill: 0xff0000,
-    align: 'center',
+    style: {
+      fontFamily: 'Press Start 2P',
+      fill: 0xff0000,
+      align: 'center',
+    },
   });
   playersTitleText.zIndex = 1000;
   const playerListText = new PIXI.Text({
     text: '\nYour game is in\noffline mode.\nThis could be\nbecause the game\nhost left.\n\nTo play it with\nyour friends,\nvisit\ngleammerray.github.io/games',
-    fontFamily: 'Press Start 2P',
-    fill: 0xffffff,
-    align: 'center',
+    style: {
+      fontFamily: 'Press Start 2P',
+      fill: 0xffffff,
+      align: 'center',
+    },
   });
   playerListText.zIndex = 1000;
   const startButtonText = new PIXI.Text({
     text: '>>> START <<<',
-    fontFamily: 'Press Start 2P',
-    fill: 0xffffff,
-    align: 'left',
+    style: {
+      fontFamily: 'Press Start 2P',
+      fill: 0xffffff,
+      align: 'left',
+    },
   });
   startButtonText.zIndex = 1000;
   const modeArrowBG = PIXI.Sprite.from(PIXI.Texture.WHITE);
@@ -860,25 +870,31 @@ function mainMenu() {
   modeArrowBG.zIndex = 1000;
   const modeArrowLeft = new PIXI.Text({
     text: '-',
-    fontFamily: 'Press Start 2P',
-    fill: 0xffffff,
-    align: 'left',
+    style: {
+      fontFamily: 'Press Start 2P',
+      fill: 0xffffff,
+      align: 'left',
+    },
   });
   modeArrowLeft.zIndex = 1000;
   const modeArrowRight = new PIXI.Text({
     text: '+',
-    fontFamily: 'Press Start 2P',
-    fill: 0xffffff,
-    align: 'left',
+    style: {
+      fontFamily: 'Press Start 2P',
+      fill: 0xffffff,
+      align: 'left',
+    },
   });
   modeArrowRight.zIndex = 1000;
   const modeTextBG = PIXI.Sprite.from(PIXI.Texture.WHITE);
   modeTextBG.zIndex = 1000;
   const modeText = new PIXI.Text({
     text: '',
-    fontFamily: 'Press Start 2P',
-    fill: 0x000000,
-    align: 'center',
+    style: {
+      fontFamily: 'Press Start 2P',
+      fill: 0x000000,
+      align: 'center',
+    },
   });
   if (isAdmin) modeText.text = '1 player(s), 4 bot(s)';
   else modeText.text = 'Waiting for admin to start';
