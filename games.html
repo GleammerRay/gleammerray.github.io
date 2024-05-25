@@ -628,9 +628,9 @@ GleammerRay - Games & Secure Chat
   }
   
   module.joinChatRoom = () => {
-    document.getElementsById('spinner').style.display = 'flex';
+    document.getElementById('spinner').style.display = 'flex';
     document.getElementById('roomconnectbtntext').innerHTML = '>>> RECONNECT <<<';
-    setTimeout(() => document.getElementsById('spinner').style.display = 'none', 8000);
+    setTimeout(() => document.getElementById('spinner').style.display = 'none', 8000);
     if (roomId == null) roomId = randomHash(9);
     names[selfId] = myName;
     connectedNames[selfId] = myName;
