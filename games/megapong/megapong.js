@@ -1072,6 +1072,8 @@ function mainMenu() {
   stageAddChild(modeArrowRight);
   stageAddChild(modeTextBG);
   stageAddChild(modeText);
+
+  document.getElementById('spinner').style.display = 'none';
 }
 
 function onConnected() {
