@@ -102,9 +102,12 @@ GleammerRay - Games & Secure Chat
   }
   
   #reconnecttip {
-    color: white;
-    font-size: 1.5vw;
     color: #C8C8C8;
+    font-size: 1.5vw;
+  }
+
+  .boldtip {
+    color: white;
   }
   
   .playerlist {
@@ -289,14 +292,14 @@ GleammerRay - Games & Secure Chat
       <p><<<<<<<<<</p>
     </div>
   </div></a>
-  <div id="gamesinfo"><center><p>This page offes a peer-to-peer secure chat with RSA encryption and some fun and simple games to enjoy. Speak away, you are safe here!</p></center></div>
+  <div id="gamesinfo"><center><p>This page offes a <b class="boldtip">peer-to-peer secure chat</b> with RSA encryption and some fun and simple games to enjoy. Speak away, you are safe here!</p></center></div>
   <div id="gamesinfo"><center><p>Share a room with some friends, pick a game from the list below and start playing!</p></center></div>
   <div id="roomcodeheader" class="roomcodeinfo"><p1>↓ Share this link with your friends to play together! ↓</p1></div>
   <p id="roomcodeinput"></p>
   <div id="roomcodecopybtn" title="Copy room code" onclick="onRoomCodeCopyBtn();"><img src="images/copy-white.png"></img></div>
   <div id="roomcodefooter" class="roomcodeinfo"><p1>↑ YOUR ROOM LINK ↑</p1></div>
+  <center><p id="reconnecttip">Can't see anyone? <b class="boldtip">Try reconnecting.</b></p></center>
   <div id="roomconnectbtn" class="roomcodeinfo" onclick="onRoomConnectBtn()"><p id="roomconnectbtntext">>>> CONNECT <<<</p></div>
-  <center><p id="reconnecttip">If you have joined but can't see anyone or if you suddenly can't talk or play with them, try reconnecting.</p></center>
   <div id="playerstitle"><center><p>↓↓↓ PLAYERS ↓↓↓</p></center></div>
   <div class="playerlist"><center><p>
     0 • <input type="text" id="playernameinput" maxlength="10" value=""
@@ -312,13 +315,13 @@ GleammerRay - Games & Secure Chat
   <div id="game-console-messages"><p class="consolemsg">No messages. :(</p></div>
   <input type="message" onkeypress="gameConsoleMessageOnKeyPress(event)" id="game-console-message-input" maxlength="100" placeholder="Enter your message..."></input>
   <div id="game-console-message-send-btn" onclick="onGameConsoleMessageSendBtn()"><center><p>></p></center></div>
-  <div id="submit-issue"><p>Want to help us fix a bug in a game? Submit an issue at <a href="https://github.com/GleammerRay/gleammerray.github.io/issues" target="_blank">https://github.com/GleammerRay/gleammerray.github.io/issues</a></p></div>
   <div id="game-list-title"><center><p>GAME SELECTION</p></center></div>
   <div id="game-list">
     <p class="game-list-game-title">MegaPONG! - Now with multiplayer!<br><br>Experience the classic feel of Pong with 1, 2, 5, 10 or even more players! <br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- by Gleam.</p>
     <br>
     <center><div class="start-button" onclick="startMegaPong()"><p>START</p></div></center>
   </div>
+  <div id="submit-issue"><p>Want to help us fix a bug in a game? Submit an issue at <a href="https://github.com/GleammerRay/gleammerray.github.io/issues" target="_blank">https://github.com/GleammerRay/gleammerray.github.io/issues</a></p></div>
   <div id="toggle-grayscale2">
     <div onclick="toggleGrayscale()">
       <p><span>TOGGLE<br>GRAYSCALE</span></p>
