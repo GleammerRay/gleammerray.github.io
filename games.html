@@ -53,7 +53,7 @@ GleammerRay - Games & Secure Chat
     background-color: yellow;
     color: red;
     height: 4vw;
-    width: 94.2vw;
+    width: 75%;
     font-size: 2vw;
     word-wrap: nowrap;
     text-align: center;
@@ -67,16 +67,31 @@ GleammerRay - Games & Secure Chat
   #roomcodecopybtn {
     display: inline-block;
     position: absolute;
-    background-color: red;
     height: 5.8vw;
-    width: 5.8vw;
+    width: 25%;
+    background-color: red;
+    font-size: 4.5vw;
+    overflow: hidden;
+  }
+
+  #roomcodecopybtn td {
+    width: 100%;
+  }
+
+  #roomcodecopybtn h1 {
+    font-size: 3.6vw;
+    margin-top: 1.2vw;
     cursor: pointer;
+    text-align: left;
+    vertical-align: middle;
+    width: 100%;
+    color: white;
+    padding: 0 0 0 2.4vw;
   }
   
   #roomcodecopybtn img {
     width: 5vw;
-    margin-top: 0.4vw;
-    margin-left: 0.4vw;
+    margin-top: -2.1vw;
     image-rendering: pixelated;
   }
   
@@ -211,11 +226,6 @@ GleammerRay - Games & Secure Chat
     width: 100%;
   }
 
-  #game-console-message-send-btn .grid {
-    display: grid;
-    align-items: center;
-  }
-
   #game-console-message-send-btn h1 {
     font-size: 2.4vw;
     margin-top: 1.2vw;
@@ -320,7 +330,7 @@ GleammerRay - Games & Secure Chat
   <div id="gamesinfo"><center><p>Share a room with some friends, pick a game from the list below and start playing!</p></center></div>
   <div id="roomcodeheader" class="roomcodeinfo"><p1>↓ Share this link with your friends to play together! ↓</p1></div>
   <p id="roomcodeinput"></p>
-  <div id="roomcodecopybtn" title="Copy room code" onclick="onRoomCodeCopyBtn();"><img src="images/copy-white.png"></img></div>
+  <table id="roomcodecopybtn" title="Copy room code" onclick="onRoomCodeCopyBtn();" border="0"><tr><td><h1>COPY</h1></td><td><img src="images/copy-white.png"></img></td></tr></table>
   <div id="roomcodefooter" class="roomcodeinfo"><p1>↑ YOUR ROOM LINK ↑</p1></div>
   <center><p id="reconnecttip">Can't see anyone? <b class="boldtip">Try reconnecting.</b></p></center>
   <div id="roomconnectbtn" class="roomcodeinfo" onclick="onRoomConnectBtn()"><p id="roomconnectbtntext">>>> CONNECT <<<</p></div>
