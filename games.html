@@ -13,6 +13,7 @@ GleammerRay - Games & Secure Chat
 <meta property="og:image" content="https://github.com/GleammerRay/gleammerray.github.io/blob/main/images/gleam.jpg?raw=true">
 </head>
 <link rel="stylesheet" href="gleam.css">
+<link rel="stylesheet" href="spinner.css">
 <style>
   #page-title p {
     padding-top: 12.5
@@ -281,6 +282,7 @@ GleammerRay - Games & Secure Chat
   }
 </style>
 <body>
+  <div id="spinner" style="display: none"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
   <div class="section scroll-wrapper" id="page-title">
     <p class="marquee marquee1"><span>GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT -&nbsp;</span></p>
     <p class="marquee marquee2"><span>GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT - GAMES - CHAT -&nbsp;</span></p>
@@ -626,7 +628,9 @@ GleammerRay - Games & Secure Chat
   }
   
   module.joinChatRoom = () => {
+    document.getElementsById('spinner').style.display = 'flex';
     document.getElementById('roomconnectbtntext').innerHTML = '>>> RECONNECT <<<';
+    setTimeout(() => document.getElementsById('spinner').style.display = 'none', 8000);
     if (roomId == null) roomId = randomHash(9);
     names[selfId] = myName;
     connectedNames[selfId] = myName;
