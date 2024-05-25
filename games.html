@@ -628,6 +628,7 @@ GleammerRay - Games & Secure Chat
   }
   
   module.joinChatRoom = () => {
+    window.scrollTo(0, 0);
     document.getElementById('spinner').style.display = 'flex';
     document.getElementById('roomconnectbtntext').innerHTML = '>>> RECONNECT <<<';
     setTimeout(() => document.getElementById('spinner').style.display = 'none', 8000);
@@ -667,6 +668,7 @@ GleammerRay - Games & Secure Chat
       name = name.match(/^(?:[a-zA-Z0-9\-_][a-zA-Z0-9\-_ ]*)/gm);
       if (name == null) return;
       if (connectedNames[peerID] == null) {
+        document.getElementById('spinner').style.display = 'none';
         consoleMessages.push({ peerID: peerID, info: 'connected' });
         var audio = new Audio('audio/Coin insert into casino slot machine with a beep sound effect reduced.mp3');
         audio.loop = false;
