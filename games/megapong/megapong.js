@@ -378,8 +378,6 @@ function resizeGameView() {
     gameView.style.height = document.body.clientHeight;
     app.screen.width = document.body.clientHeight;
     app.screen.height = document.body.clientHeight;
-    app.renderer.view.width = document.body.clientHeight;
-    app.renderer.view.height = document.body.clientHeight;
     app.renderer.resize(document.body.clientHeight, document.body.clientHeight);
     return;
   }
@@ -387,8 +385,6 @@ function resizeGameView() {
   gameView.style.height = document.body.clientWidth;
   app.screen.width = document.body.clientWidth;
   app.screen.height = document.body.clientWidth;
-  app.renderer.view.width = document.body.clientWidth;
-  app.renderer.view.height = document.body.clientWidth;
   app.renderer.resize(document.body.clientWidth, document.body.clientWidth);
 }
 
