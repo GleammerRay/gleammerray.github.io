@@ -151,6 +151,7 @@ GleammerRay - Games & Secure Chat
     font-size: 1.5vw;
     overflow: hidden;
     text-shadow: -3px 3px 0px black;
+    margin-top: 20;
   }
 
   #active-games-messages {
@@ -332,8 +333,7 @@ GleammerRay - Games & Secure Chat
   <p id="roomcodeinput"></p>
   <table id="roomcodecopybtn" title="Copy room code" onclick="onRoomCodeCopyBtn();" border="0"><tr><td><h1>COPY</h1></td><td><img src="images/copy-white.png"></img></td></tr></table>
   <div id="roomcodefooter" class="roomcodeinfo"><p1>↑ YOUR ROOM LINK ↑</p1></div>
-  <center><p id="reconnecttip">Can't see anyone? <b class="boldtip">Try reconnecting.</b></p></center>
-  <div id="roomconnectbtn" class="roomcodeinfo" onclick="onRoomConnectBtn()"><p id="roomconnectbtntext">>>> CONNECT <<<</p></div>
+  <center><p id="reconnecttip">Click your username to edit it.</p></center>
   <div id="playerstitle"><center><p>↓↓↓ PLAYERS ↓↓↓</p></center></div>
   <div class="playerlist"><center><p>
     0 • <input type="text" id="playernameinput" maxlength="10" value=""
@@ -343,6 +343,8 @@ GleammerRay - Games & Secure Chat
                oninput    = "this.onchange();"></input>
   </p></center></div>
   <div id="playerlist" class="playerlist"><center><p>NOT CONNECTED.</p></center></div>
+  <center><p id="reconnecttip">Can't see anyone? <b class="boldtip">Try reconnecting.</b></p></center>
+  <div id="roomconnectbtn" class="roomcodeinfo" onclick="onRoomConnectBtn()"><p id="roomconnectbtntext">>>> CONNECT <<<</p></div>
   <div id="active-games-title"><center><p>ACTIVE GAMES</p></center></div>
   <div id="active-games-messages"><p>No active games - zZz</p></div>
   <div id="game-console-title"><center><p>SECURE GAME CONSOLE</p></center></div>
