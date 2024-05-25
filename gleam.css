@@ -143,6 +143,10 @@ input[type=number] {
   color: yellow;
 }
 
+.section > p {
+  color: white;
+}
+
 .overlay { width: 100%; height:100%; position: absolute; }
 
 #home-button {
@@ -253,6 +257,19 @@ input[type=number] {
   background: black;
   animation: pupil-blink 2s linear infinite;
 }
+
+.pupil-down-left {
+  position: relative;
+  width: 80%;
+  height: 80%;
+  left: 4.4%;
+  top: 18%;
+  -webkit-border-radius: 1000px;
+  -moz-border-radius: 1000px;
+  border-radius: 1000px;
+  background: black;
+  animation: pupil-down-left-blink 2s linear infinite;
+}
   
 @keyframes eye-blink {
   0% {
@@ -281,5 +298,20 @@ input[type=number] {
   50% {
     height: 80%;
     top: 11%;
+  }
+}
+
+@keyframes pupil-down-left-blink {
+  0% {
+    height: 80%;
+    top: 18%;
+  }
+  25% {
+    height: 0;
+    top: 50%;
+  }
+  50% {
+    height: 80%;
+    top: 18%;
   }
 }
