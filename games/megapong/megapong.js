@@ -127,15 +127,16 @@ function interpolate(start, end, multiplier = 0.5) {
 
 var gameView = document.getElementById('game-view');
 
-const app = new PIXI.Application({
+const app = new PIXI.Application()
+await app.init({
   width: 640,
   height: 360
 });
 var nextChildIndex = 0;
 var stageChildren = {};
-app.view.style.position = 'relative';
+app.canvas.style.position = 'relative';
 app.stage.sortableChildren = true;
-gameView.appendChild(app.view);
+gameView.appendChild(app.canvas);
 
 function stageAddChild(child) {
   app.stage.addChild(child);
@@ -379,6 +380,7 @@ function resizeGameView() {
     app.screen.height = document.body.clientHeight;
     app.renderer.view.width = document.body.clientHeight;
     app.renderer.view.height = document.body.clientHeight;
+    app.renderer.resize(document.body.clientHeight, document.body.clientHeight);
     return;
   }
   gameView.style.width = document.body.clientWidth;
@@ -387,6 +389,7 @@ function resizeGameView() {
   app.screen.height = document.body.clientWidth;
   app.renderer.view.width = document.body.clientWidth;
   app.renderer.view.height = document.body.clientWidth;
+  app.renderer.resize(document.body.clientWidth, document.body.clientWidth);
 }
 
 function rotateUntil(vector, degree, shouldStop) {
@@ -466,7 +469,8 @@ function victoryScreenToMainMenu() {
 
 function victoryScreen(text) {
   victoryIsPlaying = true;
-  const victoryText = new PIXI.Text(text, {
+  const victoryText = new PIXI.Text({
+    text: text,
     fontFamily: 'Press Start 2P',
     fill: rainbowColors[randInt(0, 6)],
     align: 'center',
@@ -559,7 +563,8 @@ function start2p() {
   shakeDirection = new Vector2();
   shakeTimerMax = 300;
 
-  const gameTimerText = new PIXI.Text('5', {
+  const gameTimerText = new PIXI.Text({
+    text: '5',
     fontFamily: 'Press Start 2P',
     fontSize: 24,
     fill: 0xff1010,
@@ -567,18 +572,18 @@ function start2p() {
   });
 
   function shake(dt) {
-    app.view.style.bottom = `${shakeProgress * 2 * -shakeDirection.y}%`;
-    app.view.style.left = `${shakeProgress * 2 * shakeDirection.x}%`;
+    app.canvas.style.bottom = `${shakeProgress * 2 * -shakeDirection.y}%`;
+    app.canvas.style.left = `${shakeProgress * 2 * shakeDirection.x}%`;
     if (shakeTimer == 0) {
       //if (lastHurtPlayerVisual != null) lastHurtPlayerVisual.healthSprite.tint = 0xdddddd;
-      app.view.style.bottom = 0;
-      app.view.style.left = 0;
+      app.canvas.style.bottom = 0;
+      app.canvas.style.left = 0;
       return;
     }
     if (shakeTimerMax > 300) {
       //if (lastHurtPlayerVisual != null) lastHurtPlayerVisual.healthSprite.tint = 0xff0000;
-      app.view.style.bottom = `${randInt(-1, 1)}%`;
-      app.view.style.left = `${randInt(-1, 1)}%`;
+      app.canvas.style.bottom = `${randInt(-1, 1)}%`;
+      app.canvas.style.left = `${randInt(-1, 1)}%`;
     }
     if (shakeTimer < 0) {
       shakeTimer -= dt;
@@ -829,19 +834,22 @@ function mainMenu() {
   var mouseY = 0;
   var pointedAt;
   
-  const playersTitleText = new PIXI.Text('↓ PLAYERS ↓', {
+  const playersTitleText = new PIXI.Text({
+    text: '↓ PLAYERS ↓',
     fontFamily: 'Press Start 2P',
     fill: 0xff0000,
     align: 'center',
   });
   playersTitleText.zIndex = 1000;
-  const playerListText = new PIXI.Text('\nYour game is in\noffline mode.\nThis could be\nbecause the game\nhost left.\n\nTo play it with\nyour friends,\nvisit\ngleammerray.github.io/games', {
+  const playerListText = new PIXI.Text({
+    text: '\nYour game is in\noffline mode.\nThis could be\nbecause the game\nhost left.\n\nTo play it with\nyour friends,\nvisit\ngleammerray.github.io/games',
     fontFamily: 'Press Start 2P',
     fill: 0xffffff,
     align: 'center',
   });
   playerListText.zIndex = 1000;
-  const startButtonText = new PIXI.Text('>>> START <<<', {
+  const startButtonText = new PIXI.Text({
+    text: '>>> START <<<',
     fontFamily: 'Press Start 2P',
     fill: 0xffffff,
     align: 'left',
@@ -850,13 +858,15 @@ function mainMenu() {
   const modeArrowBG = PIXI.Sprite.from(PIXI.Texture.WHITE);
   modeArrowBG.tint = 0xFF0000;
   modeArrowBG.zIndex = 1000;
-  const modeArrowLeft = new PIXI.Text('-', {
+  const modeArrowLeft = new PIXI.Text({
+    text: '-',
     fontFamily: 'Press Start 2P',
     fill: 0xffffff,
     align: 'left',
   });
   modeArrowLeft.zIndex = 1000;
-  const modeArrowRight = new PIXI.Text('+', {
+  const modeArrowRight = new PIXI.Text({
+    text: '+',
     fontFamily: 'Press Start 2P',
     fill: 0xffffff,
     align: 'left',
@@ -864,7 +874,8 @@ function mainMenu() {
   modeArrowRight.zIndex = 1000;
   const modeTextBG = PIXI.Sprite.from(PIXI.Texture.WHITE);
   modeTextBG.zIndex = 1000;
-  const modeText = new PIXI.Text('', {
+  const modeText = new PIXI.Text({
+    text: '',
     fontFamily: 'Press Start 2P',
     fill: 0x000000,
     align: 'center',
