@@ -370,6 +370,8 @@ GleammerRay - Games & Secure Chat
   
   function onRoomConnectBtn() {
     module.leaveChatRoom();
+    window.scrollTo(0, 0);
+    document.getElementById('spinner').style.display = 'flex';
     setTimeout(() => module.joinChatRoom(), 2000);
   }
   
