@@ -997,7 +997,7 @@ function mainMenu() {
   onmousemove = (e) => {
     mouseX = (e.clientX - ((document.body.clientWidth - app.screen.width) / 2));
     pointerX = mouseX / app.screen.width;
-    mouseY = e.clientY;
+    mouseY = (e.clientY - ((document.body.clientHeight - app.screen.height) / 2));
     if (!isAdmin) return;
     document.body.style.cursor = "auto";
     pointedAt = null;
