@@ -844,7 +844,7 @@ function mainMenu() {
   });
   playersTitleText.zIndex = 1000;
   const playerListText = new PIXI.Text({
-    text: '\nYour game is in\noffline mode.\nThis could be\nbecause the game\nhost left.\n\nTo play it with\nyour friends,\nvisit\ngleammerray.github.io/games',
+    text: '\nYour game is in\noffline mode.\nThis could be\nbecause the game\nhost left.\n\nTo play it with\nyour friends,\nvisit',
     style: {
       fontFamily: 'Press Start 2P',
       fill: 0xffffff,
@@ -852,6 +852,15 @@ function mainMenu() {
     },
   });
   playerListText.zIndex = 1000;
+  const gamesLinkText = new PIXI.Text({
+    text: 'gleammerray.github.io/games',
+    style: {
+      fontFamily: 'Press Start 2P',
+      fill: 0xFF0000,
+      align: 'center',
+    },
+  });
+  gamesLinkText.zIndex = 1000;
   const startButtonText = new PIXI.Text({
     text: '>>> START <<<',
     style: {
@@ -923,6 +932,9 @@ function mainMenu() {
     playerListText.style.fontSize = app.screen.width / 35;
     playerListText.x = (app.screen.width - playerListText.width) / 2;
     playerListText.y = app.screen.height / 6;
+    gamesLinkText.style.fontSize = app.screen.width / 32;
+    gamesLinkText.x = app.screen.width / 12.4;
+    gamesLinkText.y = app.screen.height / 2.1;
     var realPlayerCount = 0;
     var botPlayerCount = 0;
     const playerInfoValues = Object.values(playersInfo);
@@ -1001,6 +1013,22 @@ function mainMenu() {
     if (!isAdmin) return;
     document.body.style.cursor = "auto";
     pointedAt = null;
+    // Games link
+    if (offlineMode) {
+        gamesLinkText.x = app.screen.width / 12.4;
+        gamesLinkText.y = app.screen.height / 2.1;
+
+      if (mouseX > (app.screen.width / 14.7)) {
+        if (mouseX < (app.screen.width / 1.07)) {
+          if (mouseY > (app.screen.height / 2.2)) {
+            if (mouseY < (app.screen.height / 1.9)) {
+              document.body.style.cursor = "pointer";
+              pointedAt = 'gamesLink';
+            }
+          }
+        }
+      }
+    }
     // Start button
     if (mouseX > (app.screen.width / 2.90)) {
       if (mouseX < (app.screen.width / 1.58)) {
@@ -1049,6 +1077,9 @@ function mainMenu() {
       case 'modeArrowRight':
         createBotPlayer();
         break;
+      case 'gamesLink':
+        window.open('https://gleammerray.github.io/games', '_blank');
+        break;
     }
   }
   if (typeof ontouchend != 'undefined') {
@@ -1061,6 +1092,7 @@ function mainMenu() {
   
   stageAddChild(playersTitleText);
   stageAddChild(playerListText);
+  if (offlineMode) stageAddChild(gamesLinkText);
   stageAddChild(startButton);
   stageAddChild(startButtonText);
   stageAddChild(modeArrowBG);
