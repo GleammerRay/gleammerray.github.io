@@ -1,4 +1,4 @@
-import {selfId as sselfId, joinRoom} from 'https://cdn.skypack.dev/trystero';
+import {selfId as sselfId, joinRoom} from '/trystero-torrent.min.js';
 const config = {appId: 'https://gleammerray.github.io/games'};
 
 export function getValueFromURL(name) {
